@@ -32,7 +32,8 @@
     "MixinWorldRenderer",
     "RenderTickCounterMixin",
     "RenderTickCounterAccessor",
-    "InGameOverlayRendererMixin"
+    "InGameOverlayRendererMixin",
+    "MixinBlock"
   ],
   "injectors": {
     "defaultRequire": 1

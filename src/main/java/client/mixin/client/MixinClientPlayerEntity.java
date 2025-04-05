@@ -6,7 +6,11 @@ import client.event.listeners.EventMotion;
 import client.event.listeners.EventMove;
 import client.event.listeners.EventUpdate;
 import client.event.listeners.EventUpdateVelocity;
+import client.features.modules.ModuleManager;
+import client.features.modules.movement.NoSlowdown;
 import client.utils.RotationUtils;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -61,6 +65,21 @@ public class MixinClientPlayerEntity
 		EventMove event = new EventMove(movement.getX(), movement.getY(), movement.getZ());
 	Client.onEvent(event);
 		args.set(1, new Vec3d(event.getX(), event.getY(), event.getZ()));
+	}
+	/**
+	 * Allows NoSlowdown to intercept the isUsingItem() call in
+	 * tickMovement().
+	 */
+	@WrapOperation(at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z",
+			ordinal = 0), method = "tickMovement()V")
+	private boolean wrapTickMovementItemUse(ClientPlayerEntity instance,
+											Operation<Boolean> original)
+	{
+		if(ModuleManager.getModulebyClass(NoSlowdown.class).isEnabled())
+			return false;
+
+		return original.call(instance);
 	}
 
 

@@ -241,7 +241,7 @@ public final class RotationUtils implements MCUtil{
 			MathHelper.clamp(vec.z, box.minZ, box.maxZ));
 	}
 
-	public  float[] calcRotation(boolean legitTurnFast,Entity entity ,float speed, float range, boolean instant,float[]serverSideAngles, float fastmultipliter) {
+	public  float[] calcRotation(boolean legitTurnFast,Entity entity ,float aimSpeed, float range, boolean instant,float[]serverSideAngles, float fastmultipliter) {
 		if (serverSideAngles == null) {
 			serverSideAngles = new float[]{
 					mc.player.getYaw(), mc.player.getPitch()
@@ -250,7 +250,6 @@ public final class RotationUtils implements MCUtil{
 		float tickDelta = mc.getTickDelta();
 		float currentYaw = serverSideAngles[0];
 		float currentPitch =  serverSideAngles[1];
-		float aimSpeed =  speed;
 		if (aimSpeed > 1) {
 			aimSpeed = 1;
 		}
@@ -267,16 +266,17 @@ public final class RotationUtils implements MCUtil{
 			aYaw = currentYaw + MathHelper.wrapDegrees(center[0] - currentYaw);
 			aPitch = currentPitch + MathHelper.wrapDegrees(center[1] - currentPitch);
 			return new float[]{
-					lerp(currentYaw, aYaw, speed * 0.5f),
-					lerp(currentPitch, aPitch, speed * 0.5f)
+					lerp(currentYaw, aYaw, aimSpeed * 0.5f),
+					lerp(currentPitch, aPitch, aimSpeed * 0.5f)
 			};
 		} else {
 			float relativeVelocity = (float) (Math.abs(entity.getVelocity().getX() - mc.player.getVelocity().getX()) + Math.abs(entity.getVelocity().getZ() - mc.player.getVelocity().getZ()));
 			float[] wrappedAngles = wrapAngleArray(currentYaw, currentPitch, center);
-			float deltaH = Math.abs(currentYaw - wrappedAngles[0]);
+		float deltaH = Math.abs(currentYaw - wrappedAngles[0]);
 			if(legitTurnFast){
 				aimSpeed  =  aimSpeed + relativeVelocity*fastmultipliter;
 			}
+
 			float deltaV = Math.abs(currentPitch - wrappedAngles[1]);
 			float[] newSpeed = computeTurnSpeed(deltaH, deltaV, aimSpeed);
 			return lerpArray(new float[]{currentYaw, currentPitch}, wrappedAngles, newSpeed[0], newSpeed[1]);
@@ -285,21 +285,44 @@ public final class RotationUtils implements MCUtil{
 
 
 
-	private float[] computeTurnSpeed( float diffH, float diffV , float speed) {
-		if(diffH<1) {
-			diffH = 1;
-		}
-		if(diffV<1){
-			diffV = 1;
-		}
-		 float coeDiffH = 0.024f;
-		 float coeDiffV = 0.024f;
-		 float min = 0.005f;
-		final float turnSpeedH = (float) (coeDiffH* Math.log10(diffH)  +  speed);
-		float turnSpeedV = (float) (coeDiffV* Math.log10(diffV)  +  speed);
-		return new float[] {
-				 Math.min(Math.max(Math.abs(turnSpeedH), min), 1),
-				Math.min(Math.max(Math.abs(turnSpeedV), min), 1)
+	private float[] computeTurnSpeed(float diffH, float diffV, float speed) {
+		diffH = Math.max(diffH, 1);
+		diffV = Math.max(diffV, 1);
+
+		final float coeDiffH = 0.048f;
+		final float coeDiffV = 0.048f;
+		final float minSpeed = 0.005f;
+		final float maxSpeed = 1.0f;
+
+		float turnSpeedH = coeDiffH * (float) Math.log10(diffH) + speed;
+		float turnSpeedV = coeDiffV * (float) Math.log10(diffV) + speed;
+
+		return new float[]{
+				Math.min(Math.max(Math.abs(turnSpeedH), minSpeed), maxSpeed),
+				Math.min(Math.max(Math.abs(turnSpeedV), minSpeed), maxSpeed)
+		};
+	}
+	private float[] computeTurnSpeedDynamic(float diffH, float diffV, float speed) {
+		diffH = Math.max(diffH, 1);
+		diffV = Math.max(diffV, 1);
+
+		// Dynamic coefficient calculations
+		float baseCoeff = 0.02f;  // Base coefficient
+		float factorCoeff = 0.01f; // Adaptive factor
+		float coeDiffH = baseCoeff + (factorCoeff / (diffH + 1)); // Dynamic coefficient for H
+		float coeDiffV = baseCoeff + (factorCoeff / (diffV + 1)); // Dynamic coefficient for V
+
+		// Compute turn speeds
+		float turnSpeedH = coeDiffH * (float) Math.log10(diffH) + speed;
+		float turnSpeedV = coeDiffV * (float) Math.log10(diffV) + speed;
+
+		// Min and max thresholds
+		float minSpeed = 0.005f;
+		float maxSpeed = 1.0f;
+
+		return new float[]{
+				Math.min(Math.max(turnSpeedH, minSpeed), maxSpeed),
+				Math.min(Math.max(turnSpeedV, minSpeed), maxSpeed)
 		};
 	}
 	public float[] calcRotation(Entity entity) {
@@ -343,6 +366,7 @@ public final class RotationUtils implements MCUtil{
 	}
 
 	private float lerp(float a, float b, float t) {
+
 		return a + (b - a) * t;
 	}
 	private float[] lerpArray (float[]from, float[] target, float vSpeed, float hSpeed){
