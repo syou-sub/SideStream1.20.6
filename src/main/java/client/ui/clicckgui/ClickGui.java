@@ -1,5 +1,7 @@
 package client.ui.clicckgui;
 
+import client.Client;
+import client.config.Config;
 import client.features.modules.Module;
 import client.utils.RenderingUtils;
 import client.utils.animation.AnimationUtil;
@@ -13,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class ClickGui extends Screen
 {
 	
 	private final List<ClickGuiWindow> windows = new ArrayList<>();
+    private final List<ClickGuiWindow2> windows2 = new ArrayList<>();
 	private  final MinecraftClient mc  = MinecraftClient.getInstance();
 	private int mouseX, mouseY;
 	private float partialTicks;
@@ -33,14 +37,18 @@ public class ClickGui extends Screen
 			windows.add(new ClickGuiWindow((float)currentX, 3, c));
 			currentX += 150;
 		}
-	}
+        currentX += 10;
+        windows2.add(new ClickGuiWindow2((float)currentX, 3, Client.configManager));
+    }
 
 
 	@Override
 	protected void init()
 	{
 		windows.forEach(ClickGuiWindow::init);
+        windows2.forEach(ClickGuiWindow2::init);
 		windows.forEach(m -> m.setSize(width, height));
+        windows2.forEach(m -> m.setSize(width, height));
 		animationUtil.setTick(0.25);
 		super.init();
 	}
@@ -58,7 +66,7 @@ public class ClickGui extends Screen
 		//stack.scale(size,size, 0);
 		stack.translate((float) -window.getScaledWidth() / 4, (float) -window.getScaledHeight() / 4, 0);
 		windows.forEach(m -> m.render(stack, mouseX, mouseY, delta));
-		stack.pop();
+        windows2.forEach(m -> m.render(stack, mouseX, mouseY, delta));		stack.pop();
 	}
 	public static void setAlphaLimit(MatrixStack matrixStack, float alpha) {
 		alpha = MathHelper.clamp(alpha * 0.01f, 0.0f, 1.0f);
@@ -75,6 +83,7 @@ public class ClickGui extends Screen
 	public boolean mouseClicked(double mouseX, double mouseY, int button)
 	{
 		windows.forEach(m -> m.mouseClicked(mouseX, mouseY, button));
+        windows2.forEach(m -> m.mouseClicked(mouseX, mouseY, button));
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
 	
@@ -82,6 +91,7 @@ public class ClickGui extends Screen
 	public boolean mouseReleased(double mouseX, double mouseY, int button)
 	{
 		windows.forEach(m -> m.mouseReleased(mouseX, mouseY, button));
+        windows2.forEach(m -> m.mouseReleased(mouseX, mouseY, button));
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
 	
@@ -91,6 +101,8 @@ public class ClickGui extends Screen
 	{
 		windows.forEach(m -> m.mouseScrolled(mouseX, mouseY, horizontalAmount,
 			verticalAmount));
+        windows2.forEach(m -> m.mouseScrolled(mouseX, mouseY, horizontalAmount,
+                verticalAmount));
 		return super.mouseScrolled(mouseX, mouseY, horizontalAmount,
 			verticalAmount);
 	}
