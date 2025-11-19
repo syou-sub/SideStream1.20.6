@@ -155,6 +155,13 @@ public class ClickGuiWindow2
                         throw new RuntimeException(e);
                     }
 
+                } else{
+                    try{
+                        Client.getConfigManager().saveConfig(configFile.getName());
+                        ChatUtils.printChat("Successfully saved "+ configFile.getName()+ " config." );
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 return;
             }
