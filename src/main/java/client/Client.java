@@ -11,6 +11,7 @@ import client.ui.BackgroundManager;
 import client.ui.HUD2;
 import client.utils.MCTimerUtil;
 import client.utils.RotationUtils;
+import com.morekilleffects.SkywarsKillEffect;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 
@@ -25,7 +26,7 @@ public class Client
 	public static AltManager altManager;
 	@Getter
 	public static ConfigManager configManager;
-	
+	public static SkywarsKillEffect skywarsKillEffect;
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static MCTimerUtil timerUtil = new MCTimerUtil();
 	public static IMinecraftClient IMC = (IMinecraftClient)mc;
@@ -44,6 +45,7 @@ public class Client
 		makeClientDirectory();
 		altManager = new AltManager();
 		configManager = new ConfigManager();
+		skywarsKillEffect = new SkywarsKillEffect();
 	}
 	
 	public static Event<?> onEvent(Event<?> e)

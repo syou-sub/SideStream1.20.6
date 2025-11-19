@@ -67,6 +67,7 @@ public class ModuleManager implements MCUtil
 		modules.add(new KeepSprint());
 		modules.add(new VanillaSpoofer());
 		modules.add(new NoSlowdown());
+		modules.add(new MoreKillEffects());
 	}
 	
 	public static class ModuleComparator implements Comparator<Module>
