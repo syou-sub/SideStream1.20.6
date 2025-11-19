@@ -44,7 +44,12 @@ public class NumberSetting extends Setting
 			Math.round(Math.max(minimum, Math.min(maximum, value)) * preci)
 				/ preci;
 	}
-	public String getValueString(){
+
+    public double getValue() {
+        return value;
+    }
+
+    public String getValueString(){
 		return String.valueOf(getFlooredValue());
 	}
 	

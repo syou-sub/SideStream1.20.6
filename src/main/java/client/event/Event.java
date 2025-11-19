@@ -32,8 +32,16 @@ public class Event<T>
 		
 		return type == EventType.POST;
 	}
-	
-	public boolean isIncoming()
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public boolean isIncoming()
 	{
 		if(direction == null)
 			return false;
