@@ -40,24 +40,25 @@ public class ClickGuiWindow2
     private float x, y, lastX, lastY;
     private boolean dragging = false, expand = true;
 
-    private final List<File> configs;
+    private List<File> configs;
     int keyCode;
     KeyBindSetting keyBindSetting = null;
     private static boolean clicked = false;
     public int width;
     public int height;
 
-    public ClickGuiWindow2(float x, float y, ConfigManager configManager)
+    public ClickGuiWindow2(float x, float y)
     {
         this.x = x;
         this.y = y;
-        configs = configManager.getCustomConfigs().stream()
+        configs = Client.configManager.getCustomConfigs().stream()
                 .collect(Collectors.toList());
     }
 
     public void init()
     {
-
+        configs = Client.configManager.getCustomConfigs().stream()
+                .collect(Collectors.toList());
     }
 
     public void setSize(int width, int height)

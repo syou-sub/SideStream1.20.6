@@ -38,7 +38,7 @@ public class ClickGui extends Screen
 			currentX += 150;
 		}
         currentX += 10;
-        windows2.add(new ClickGuiWindow2((float)currentX, 3, Client.configManager));
+        windows2.add(new ClickGuiWindow2((float)currentX, 3));
     }
 
 
@@ -46,7 +46,6 @@ public class ClickGui extends Screen
 	protected void init()
 	{
 		windows.forEach(ClickGuiWindow::init);
-        windows2.forEach(ClickGuiWindow2::init);
 		windows.forEach(m -> m.setSize(width, height));
         windows2.forEach(m -> m.setSize(width, height));
 		animationUtil.setTick(0.25);
