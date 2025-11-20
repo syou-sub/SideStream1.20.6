@@ -56,6 +56,7 @@ public BooleanSetting advertise;
         }
         super.onEvent(e);
         if(e instanceof EventUpdate){
+            setTag(mode.getMode());
             if( loserName!= null && timer.hasReached(delay.getValue())){
                sendMessage(loserName);
                 timer.reset();
