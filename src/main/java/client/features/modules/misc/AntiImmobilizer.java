@@ -26,7 +26,7 @@ public class AntiImmobilizer extends Module {
 addSetting(delay,sendMessage);
     }
     public void onUpdate(EventUpdate eventUpdate){
-        if (mc.player != null && Objects.requireNonNull(mc.player.getStatusEffect(StatusEffects.SLOWNESS)).isAmbient()) {
+        if (mc.player != null && mc.player.getStatusEffect(StatusEffects.SLOWNESS) != null) {
             if(sendMessage.getValue()) {
                 sendChat();
             }
