@@ -323,6 +323,114 @@ public class RenderingUtils implements MCUtil
 		RenderSystem.enableDepthTest();
 		RenderSystem.disableBlend();
 	}
+    public static void draw3DDebugBox(Matrix4f matrix4f, Box box, int color)
+    {
+        float alpha = (color >> 24 & 0xFF) / 255F;
+        float red = (color >> 16 & 0xFF) / 255F;
+        float green = (color >> 8 & 0xFF) / 255F;
+        float blue = (color & 0xFF) / 255F;
+        RenderSystem.setShaderColor(red, green, blue, alpha);
+
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+        Tessellator tessellator = RenderSystem.renderThreadTesselator();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        RenderSystem.setShader(GameRenderer::getPositionProgram);
+
+        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES,
+                VertexFormats.POSITION);
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.minY, (float)box.minZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.minZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.minZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.maxZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.maxZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.minY, (float)box.maxZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.minY, (float)box.maxZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.minY, (float)box.minZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.minY, (float)box.minZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.minZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.minZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.minZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.maxZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.maxZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.minY, (float)box.maxZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.maxZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.minZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.minZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.minZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.maxZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.maxZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.maxZ)
+                .next();
+
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.maxZ)
+                .next();
+        bufferBuilder
+                .vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.minZ)
+                .next();
+
+        tessellator.draw();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
 	
 	public static void draw3DBox2(Matrix4f matrix4f, Box box, int color)
 	{
