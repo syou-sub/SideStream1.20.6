@@ -106,7 +106,7 @@ targetESP = new BooleanSetting("Target ESP", true);
     {
 
         if(e instanceof EventUpdate) {
-            setTag(sortmode.getMode() + " " + targets.size());
+            setTag(sortmode.getMode() + " " + "["+targets.size()+"]");
             boolean legitInstant =  legitInstantSettings.getValues().get("Legit Instant");
             boolean smartLegitInstant = legitInstantSettings.getValues().get("Smart Legit Instant");
             if((Objects.requireNonNull(mc.player).isUsingItem()  && itemCheck.isEnabled()) || clickOnly.enabled && !mc.options.attackKey.isPressed()){

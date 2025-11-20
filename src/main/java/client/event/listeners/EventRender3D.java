@@ -10,9 +10,9 @@ import net.minecraft.client.util.math.MatrixStack;
  */
 @Getter
 public class EventRender3D extends Event<EventRender3D> {
-	MatrixStack matrix;
-	float partialTicks;
-	Frustum frustum;
+	public MatrixStack matrix;
+	public float partialTicks;
+	public Frustum frustum;
 	
 	public EventRender3D(MatrixStack matrix4f, float partialTicks,
 		Frustum frustum)

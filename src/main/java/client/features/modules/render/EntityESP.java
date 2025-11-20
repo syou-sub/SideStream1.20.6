@@ -43,7 +43,7 @@ public class EntityESP extends Module
 			new String[]{"HurtTime", "Team"});
 		alpha = new NumberSetting("Alpha", 0.5, 0 , 1,0.1);
 		mode = new ModeSetting("Mode ", "BoundingBox",
-			new String[]{"BoundingBox"});
+			new String[]{"BoundingBox","Debug3DBox"});
 		mobs = new BooleanSetting("Render Mobs", true);
 		addSetting(mode, colorMode,mobs,alpha);
 	}
@@ -78,35 +78,40 @@ if(!(entity instanceof PlayerEntity) && !mobs.isEnabled()){
 										? new Color(0, 200, 0, 0).getRGB()
 										: new Color(239, 235, 41,   0).getRGB();
 							}
+                            Box boundingBox = entity.getBoundingBox();
+                            double interpolatedX = MathHelper.lerp(partialTicks,
+                                    entity.prevX, entity.getX());
+                            double interpolatedY = MathHelper.lerp(partialTicks,
+                                    entity.prevY, entity.getY());
+                            double interpolatedZ = MathHelper.lerp(partialTicks,
+                                    entity.prevZ, entity.getZ());
 
-							switch (mode.getMode()) {
+                            if(ModuleManager.getModulebyClass(HitBoxes.class).isEnabled()){
+                                boundingBox = entity.getBoundingBox().offset(
+                                        interpolatedX - entity.getX(),
+                                        interpolatedY - entity.getY(),
+                                        interpolatedZ - entity.getZ()).expand(HitBoxes.getSize(entity));
+                            } else {
+                                boundingBox = entity.getBoundingBox().offset(
+                                        interpolatedX - entity.getX(),
+                                        interpolatedY - entity.getY(),
+                                        interpolatedZ - entity.getZ());
+                            }
+
+                            switch (mode.getMode()) {
+
 								case "BoundingBox":
-									double interpolatedX = MathHelper.lerp(partialTicks,
-											entity.prevX, entity.getX());
-									double interpolatedY = MathHelper.lerp(partialTicks,
-											entity.prevY, entity.getY());
-									double interpolatedZ = MathHelper.lerp(partialTicks,
-											entity.prevZ, entity.getZ());
-									Box boundingBox;
-if(ModuleManager.getModulebyClass(HitBoxes.class).isEnabled()){
-	 boundingBox = entity.getBoundingBox().offset(
-			interpolatedX - entity.getX(),
-			interpolatedY - entity.getY(),
-			interpolatedZ - entity.getZ()).expand(HitBoxes.getSize(entity));
-} else {
-	boundingBox = entity.getBoundingBox().offset(
-			interpolatedX - entity.getX(),
-			interpolatedY - entity.getY(),
-			interpolatedZ - entity.getZ());
-}
-									RenderingUtils.draw3DBox2(
+
+
+								RenderingUtils.draw3DBox2(
 											matrixStack.peek().getPositionMatrix(),
 											boundingBox, Colors.reAlpha(color, (float) alpha.getValue()));
 									break;
-								case "Lines":
-									// RenderingUtils.drawEntityModel(matrixStack,
-									// partialTicks, entity, color,
-									// lineThickness.getValue());
+								case "Debug3DBox":
+
+                                    RenderingUtils.draw3DDebugBox(
+                                            matrixStack.peek().getPositionMatrix(),
+                                            boundingBox, Colors.reAlpha(color, (float) alpha.getValue()));
 									break;
 							}
 						}
