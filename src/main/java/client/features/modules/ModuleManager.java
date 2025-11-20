@@ -23,7 +23,7 @@ public class ModuleManager implements MCUtil
 	
 	public ModuleManager()
 	{
-		modules.add(new LegitAura2());
+		modules.add(new LegitAura());
 		modules.add(new ClickGUI());
 		modules.add(new Fullbright());
 		modules.add(new AutoClicker());
@@ -68,6 +68,7 @@ public class ModuleManager implements MCUtil
 		modules.add(new VanillaSpoofer());
 		modules.add(new NoSlowdown());
 		modules.add(new MoreKillEffects());
+        modules.add(new ItemRendererTweaker());
 	}
 	
 	public static class ModuleComparator implements Comparator<Module>
@@ -123,7 +124,6 @@ public class ModuleManager implements MCUtil
 		return modules.stream().filter(m -> m.getName().equals(str)).findFirst()
 			.orElse(null);
 	}
-	
 	public static Module getModulebyLowerName(String str)
 	{
 		return modules.stream().filter(m -> m.getName().equalsIgnoreCase(str))

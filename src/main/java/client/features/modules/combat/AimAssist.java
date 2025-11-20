@@ -1,7 +1,7 @@
 package client.features.modules.combat;
 
 import client.event.Event;
-import client.event.listeners.EventRender2D;
+import client.event.listeners.EventRender3D;
 import client.features.modules.Module;
 import client.settings.BooleanSetting;
 import client.settings.ModeSetting;
@@ -71,8 +71,8 @@ public class AimAssist extends Module
 	@Override
 	public void onEvent(Event<?> e)
 	{
-		if(e instanceof EventRender2D) {
-			float tickDelta = mc.getTickDelta();
+		if(e instanceof EventRender3D) {
+			float tickDelta = mc.getTickDelta() ;
 			setTag(sortmode.getValue()+" " + targets.size());
 			collectTargets();
 			if (!targets.isEmpty()) {

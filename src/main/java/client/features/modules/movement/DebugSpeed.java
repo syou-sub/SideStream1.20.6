@@ -6,7 +6,7 @@ import client.event.listeners.EventUpdate;
 import client.event.listeners.EventUpdateVelocity;
 import client.features.modules.Module;
 import client.features.modules.combat.AntiVelocity;
-import client.features.modules.combat.LegitAura2;
+import client.features.modules.combat.LegitAura;
 import client.settings.BooleanSetting;
 import client.settings.ModeSetting;
 import client.settings.NumberSetting;
@@ -100,10 +100,10 @@ public class DebugSpeed extends Module {
 				MCTimerUtil.setTimerSpeed(1.0F);
 				double radius = 4.0;
 				float speed;
-				if (LegitAura2.target != null && this.targetStrafe.getValue() && (!this.targetStrafeWhileSpace.getValue() || mc.options.jumpKey.isPressed())) {
+				if (LegitAura.target != null && this.targetStrafe.getValue() && (!this.targetStrafeWhileSpace.getValue() || mc.options.jumpKey.isPressed())) {
 					MCTimerUtil.setTimerSpeed((float) this.timerSpeed.getValue());
-					yaw = (double) RotationUtils.rotation(LegitAura2.target.getPos(), mc.player.getPos())[0];
-					if (!(mc.player.getPos().distanceTo(LegitAura2.target.getPos()) > 4.0)) {
+					yaw = (double) RotationUtils.rotation(LegitAura.target.getPos(), mc.player.getPos())[0];
+					if (!(mc.player.getPos().distanceTo(LegitAura.target.getPos()) > 4.0)) {
 						speed = (float) (System.currentTimeMillis() - AntiVelocity.lastVelocity > 3000L ? 70 : 90);
 						if (this.direction) {
 							yaw += (double) speed;

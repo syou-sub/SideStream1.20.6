@@ -1,7 +1,7 @@
 package client.mixin.client;
 
 import client.Client;
-import client.event.listeners.EventRenderWorld;
+import client.event.listeners.EventRenderGame;
 import client.features.modules.ModuleManager;
 import client.features.modules.render.NameTags;
 import client.features.modules.render.NoHurtcam;
@@ -43,7 +43,7 @@ public abstract class MixinGameRenderer
 		boolean bl, Camera camera, Entity entity, double d, Matrix4f matrix4f,
 		MatrixStack matrixStack, float f, float g, Matrix4f matrix4f2)
 	{
-		EventRenderWorld event = new EventRenderWorld(tickDelta, matrixStack);
+		EventRenderGame event = new EventRenderGame(tickDelta, matrixStack);
 		Client.onEvent(event);
 		
 	}
