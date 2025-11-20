@@ -21,21 +21,24 @@ public class ChatUtils implements MCUtil
 	
 	public static void printChat(String text)
 	{
-		
+        if(text!=null)
 		mc.inGameHud.getChatHud().addMessage(Text.of(chatPrefix+ " " + text));
-		
 	}
     public static void printDebugMessage(String text)
     {
-
-        mc.inGameHud.getChatHud().addMessage(Text.of(chatPrefix+ " [Debug] " + text));
+        if(text!=null) {
+            mc.inGameHud.getChatHud().addMessage(Text.of(chatPrefix + " [Debug] " + text));
+        }else {
+            Logger.logConsole("Try to send null message.");
+        }
 
     }
 	
 	public static void printChatNoName(String text)
 	{
-		
-		mc.inGameHud.getChatHud().addMessage(Text.of((text)));
+		if(text !=null) {
+            mc.inGameHud.getChatHud().addMessage(Text.of((text)));
+        }
 		
 	}
     private static MutableText getCustomPrefix(String prefixTitle, Formatting prefixColor) {
@@ -67,8 +70,6 @@ public class ChatUtils implements MCUtil
 
         ((IChatHud) mc.inGameHud.getChatHud()).meteor$add(message, id);
     }
-
-	
 	public static void sendChat(String text)
 	{
         Objects.requireNonNull(mc.player).sendMessage(Text.of(text));
