@@ -42,9 +42,6 @@ public abstract class MixinChatHud implements IChatHud {
     private MinecraftClient client;
     @Shadow
     @Final
-    private List<ChatHudLine.Visible> visibleMessages;
-    @Shadow
-    @Final
     private List<ChatHudLine> messages;
 
     @Unique
@@ -59,10 +56,7 @@ public abstract class MixinChatHud implements IChatHud {
     @Shadow
     public abstract void addMessage(Text message);
 
-    @Inject(method = "addVisibleMessage", at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V", shift = At.Shift.AFTER))
-    private void onAddMessageAfterNewChatHudLineVisible(ChatHudLine message, CallbackInfo ci) {
-        ((IChatHudLine) (Object) visibleMessages.getFirst()).meteor$setId(nextId);
-    }
+
 
     @Inject(method = "addMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V", at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V", shift = At.Shift.AFTER))
     private void onAddMessageAfterNewChatHudLine(ChatHudLine message, CallbackInfo ci) {
@@ -74,7 +68,6 @@ public abstract class MixinChatHud implements IChatHud {
         Client.onEvent(event);
         if (event.isCancelled()) ci.cancel();
         else {
-            visibleMessages.removeIf(msg -> ((IChatHudLine) (Object) msg).meteor$getId() == nextId && nextId != 0);
 
             for (int i = messages.size() - 1; i > -1; i--) {
                 if (((IChatHudLine) (Object) messages.get(i)).meteor$getId() == nextId && nextId != 0) {
@@ -105,12 +98,7 @@ public abstract class MixinChatHud implements IChatHud {
         return size + betterChat.getExtraChatLines();
     }
 
-    // No Message Signature Indicator
 
-    @ModifyExpressionValue(method = "method_71992", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHudLine$Visible;indicator()Lnet/minecraft/client/gui/hud/MessageIndicator;"))
-    private MessageIndicator onRender_modifyIndicator(MessageIndicator indicator) {
-        return isBetterChat() ? null : indicator;
-    }
 
     // Anti spam
 
