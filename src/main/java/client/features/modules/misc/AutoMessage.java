@@ -78,9 +78,9 @@ public ArrayList<String> loserList = new ArrayList<>();
         }
        msgToSay = advertise.getValue()? (msgToSay +" "+ " by "+ Client.NAME +" "+ "Client." ): msgToSay;
         if(mode.is("Global")){
-            ChatUtils.sendChat("!" + loserName+ " "+ msgToSay+".");
+            ChatUtils.sendPlayerMsg("!" + loserName+ " "+ msgToSay+".");
         } else if (mode.is("Tell")) {
-            ChatUtils.sendChat("/tell " + loserName+ " "+ msgToSay+".");
+            ChatUtils.sendPlayerMsg("/tell " + loserName+ " "+ msgToSay+".");
         }
 
     }

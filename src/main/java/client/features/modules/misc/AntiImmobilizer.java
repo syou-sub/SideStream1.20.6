@@ -38,7 +38,7 @@ addSetting(delay,sendMessage);
     }
     public void sendChat(){
         if(timer.hasReached(delay.getValue()) &&!said) {
-            ChatUtils.sendChat("!イモビは嫌いよ～ #SideStream Client. " + Math.random());
+            ChatUtils.sendPlayerMsg("!イモビは嫌いよ～ #SideStream Client. " + Math.random());
             said = true;
             timer.reset();
         }

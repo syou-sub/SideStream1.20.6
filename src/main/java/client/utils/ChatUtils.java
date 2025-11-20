@@ -70,6 +70,23 @@ public class ChatUtils implements MCUtil
 
         ((IChatHud) mc.inGameHud.getChatHud()).meteor$add(message, id);
     }
+
+    /**
+     * Sends the message as if the user typed it into chat and adds it to the chat history.
+     */
+    public static void sendPlayerMsg(String message) {
+        sendPlayerMsg(message, true);
+    }
+
+    /**
+     * Sends the message as if the user typed it into chat.
+     */
+    public static void sendPlayerMsg(String message, boolean addToHistory) {
+        if (addToHistory) mc.inGameHud.getChatHud().addToMessageHistory(message);
+
+        if (message.startsWith("/")) mc.player.networkHandler.sendChatCommand(message.substring(1));
+        else mc.player.networkHandler.sendChatMessage(message);
+    }
 	public static void sendChat(String text)
 	{
         Objects.requireNonNull(mc.player).sendMessage(Text.of(text));
