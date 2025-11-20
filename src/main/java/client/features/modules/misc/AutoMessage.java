@@ -49,18 +49,19 @@ public ArrayList<String> loserList = new ArrayList<>();
             String message = ((EventReceiveMessage) e).getMessageString();
             if (!message.contains(ChatUtils.chatPrefix)) {
                 String[] messageArray = null;
-               if(message.contains(mc.player.getName().getLiteralString() + " killed"))
+               if(message.startsWith(mc.player.getName().getLiteralString()) && message.contains("killed"))
                {
                  messageArray = message.split(" ");
-               loserName = messageArray[2];
-               loserList.add(messageArray[2]);
+                 String user  = messageArray[2].replaceAll("\\(.+?\\)", "");
+               loserName = user;
+               loserList.add(user);
                }
             }
         }
         super.onEvent(e);
         if(e instanceof EventUpdate){
             setTag(mode.getMode() + " ["+loserList.size()+"]");
-            if( !loserList.isEmpty() && timer.hasReached(delay.getValue())){
+            if(!loserList.isEmpty() && timer.hasReached(delay.getValue())){
                sendMessage(loserList.getFirst());
                loserList.removeFirst();
                 timer.reset();
