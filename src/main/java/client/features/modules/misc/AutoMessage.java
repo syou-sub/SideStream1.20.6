@@ -16,6 +16,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class AutoMessage extends Module
@@ -26,6 +27,7 @@ public TimeHelper timer = new TimeHelper();
 public ModeSetting mode;
 public ModeSetting messageMode;
 public BooleanSetting advertise;
+public ArrayList<String> loserList = new ArrayList<>();
 
     public AutoMessage()
     {
@@ -51,14 +53,16 @@ public BooleanSetting advertise;
                {
                  messageArray = message.split(" ");
                loserName = messageArray[2];
+               loserList.add(messageArray[2]);
                }
             }
         }
         super.onEvent(e);
         if(e instanceof EventUpdate){
             setTag(mode.getMode());
-            if( loserName!= null && timer.hasReached(delay.getValue())){
-               sendMessage(loserName);
+            if( !loserList.isEmpty() && timer.hasReached(delay.getValue())){
+               sendMessage(loserList.getFirst());
+               loserList.removeFirst();
                 timer.reset();
                 loserName = null;
             }
