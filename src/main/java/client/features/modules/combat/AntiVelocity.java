@@ -61,7 +61,7 @@ public class AntiVelocity extends Module
 			}
 			if(this.mode.getMode().equalsIgnoreCase("Simple"))
 			{
-				if(targetCheck.isEnabled() && (LegitAura2.target != null || AimAssist.target !=null)) {
+				if(targetCheck.isEnabled() && (LegitAura.target != null || AimAssist.target !=null)) {
 					if (this.clickOnly.isEnabled() && !mc.options.useKey.isPressed()) {
 						return;
 					}

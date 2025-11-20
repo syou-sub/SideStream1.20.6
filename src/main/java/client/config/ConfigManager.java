@@ -48,6 +48,18 @@ public class ConfigManager
 			}
 		}));
 	}
+    public boolean reloadConfig(){
+        try{
+            for(Config config : getConfigs())
+            {
+                config.load();
+                return true;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
 	
 	public Config getFile(String name)
 	{

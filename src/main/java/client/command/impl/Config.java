@@ -43,6 +43,7 @@ if(args.length== 0){
 			{
 				ChatUtils.printChat(
 					String.format("Successfully saved config: '%s'", args[1]));
+                Client.configManager.reloadConfig();
 			}else
 			{
 				ChatUtils.printChat(
@@ -54,6 +55,7 @@ if(args.length== 0){
 			{
 				ChatUtils.printChat(String
 					.format("Successfully deleted config: '%s'", args[1]));
+                Client.configManager.reloadConfig();
 			}else
 			{
 				ChatUtils.printChat(String.format("Failed to delete config: '%s'", args[1]));

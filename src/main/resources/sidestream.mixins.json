@@ -15,6 +15,7 @@
     "YggdrasilMinecraftSessionServiceAccessor"
   ],
   "client": [
+    "MixinHeldItemRenderer",
     "RenderTickCounterAccessor",
     "KeyboardInputMixin",
     "MixinChatScreen",

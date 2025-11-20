@@ -7,7 +7,6 @@
  */
 package client.features.modules.combat;
 
-import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import client.event.Event;
@@ -53,8 +52,8 @@ public class WTap
                 }
                 return;
             }
-            if ((mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.ENTITY&& mc.options.attackKey.isPressed())||(  LegitAura2.target!= null && LegitAura2.targets.size()==1)) {
-                LivingEntity target = mc.crosshairTarget== null? LegitAura2.target: (LivingEntity) mc.targetedEntity;
+            if ((mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.ENTITY&& mc.options.attackKey.isPressed())||(  LegitAura.target!= null && LegitAura.targets.size()==1)) {
+                LivingEntity target = mc.crosshairTarget== null? LegitAura.target: (LivingEntity) mc.targetedEntity;
                 if (target == null) {
                     return;
                 }

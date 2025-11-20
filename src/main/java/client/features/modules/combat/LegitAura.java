@@ -14,12 +14,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -27,7 +25,7 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.*;
 
-public class LegitAura2 extends Module
+public class LegitAura extends Module
 {
     float[] fixed;
     float[] angles = null;
@@ -60,9 +58,9 @@ public class LegitAura2 extends Module
 
 
 
-    public LegitAura2()
+    public LegitAura()
     {
-        super("LegitAura2", 0, Category.COMBAT);
+        super("LegitAura", 0, Category.COMBAT);
     }
 
     @Override
@@ -83,11 +81,11 @@ public class LegitAura2 extends Module
         itemCheck = new BooleanSetting("Item Check", true);
         this.fov = new NumberSetting("FOV", 20D, 0D, 360D, 1.0D);
         hitThroughWalls = new BooleanSetting("Hit Through Walls", false);
-        clickOnly = new BooleanSetting("Click Only", true);
+        clickOnly = new BooleanSetting("Click Only", false);
         testMove = new BooleanSetting("Test Move", true);
-        silent = new BooleanSetting("Silent", true);
+        silent = new BooleanSetting("Silent", false);
         legitAimSpeed = new NumberSetting("Legit Aim Speed", 0.1D, 0.05D,1.0, 0.01D);
-        legitInstantSettings = new MultiBooleanSetting("Legit Instant Settigs");
+        legitInstantSettings = new MultiBooleanSetting("Legit Instant Settings");
         legitInstantSettings.addValue("Legit Instant", false);
         legitInstantSettings.addValue("Smart Legit Instant", false);
         smartSilent = new BooleanSetting("Smart Silent",false);

@@ -139,6 +139,7 @@ public class SettingsConfig extends Config
 				}
 			}
 			var4.close();
+
 		}catch(IOException e)
 		{
 			throw new RuntimeException(e);

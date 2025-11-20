@@ -1,8 +1,6 @@
 package client.features.modules.combat;
 
-import client.Client;
 import client.event.Event;
-import client.event.EventType;
 import client.event.listeners.EventPacket;
 import client.event.listeners.EventUpdate;
 import client.features.modules.Module;
@@ -58,7 +56,7 @@ public class LagRange extends Module {
     }
 
     public boolean isHurtTime() {
-        return LegitAura2.target.hurtTime <= 2;
+        return LegitAura.target.hurtTime <= 2;
     }
     public void fullRelease() {
         if (!mc.isInSingleplayer()) {
@@ -74,7 +72,7 @@ public class LagRange extends Module {
     }
 
     public boolean shouldCancel() {
-        if (ModuleManager.getModulebyClass(LegitAura2.class).isEnabled() && !mc.isInSingleplayer()) {
+        if (ModuleManager.getModulebyClass(LegitAura.class).isEnabled() && !mc.isInSingleplayer()) {
             return true;
         } else {
            fullRelease();
@@ -85,10 +83,10 @@ public class LagRange extends Module {
     public boolean isTargetCloseOrVisible() {
         RaytraceUtils raytraceUtils = new RaytraceUtils();
         EntityHitResult rayTracedEntity = raytraceUtils.rayCastByRotation(RotationUtils.virtualYaw, RotationUtils.virtualPitch,3.0f);
-        if (LegitAura2.target == null) {
+        if (LegitAura.target == null) {
             return false;
         } else {
-            return rayTracedEntity.getEntity() == LegitAura2.target || mc.targetedEntity == LegitAura2.target;
+            return rayTracedEntity.getEntity() == LegitAura.target || mc.targetedEntity == LegitAura.target;
         }
     }
 
