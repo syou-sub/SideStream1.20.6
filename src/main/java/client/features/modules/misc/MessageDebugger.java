@@ -22,8 +22,8 @@ public class MessageDebugger extends Module
     public void onEvent(Event<?> e)
     {
         if(e instanceof EventReceiveMessage){
-            ChatUtils.printChat("Chat Literal String :"+ ((EventReceiveMessage) e).getMessageLiteralString());
-            ChatUtils.printChat("Chat String :" +((EventReceiveMessage) e).getMessageString());
+            ChatUtils.printDebugMessage("Chat Literal String :"+ ((EventReceiveMessage) e).getMessageLiteralString());
+            ChatUtils.printDebugMessage("Chat String :" +((EventReceiveMessage) e).getMessageString());
         }
         super.onEvent(e);
     }

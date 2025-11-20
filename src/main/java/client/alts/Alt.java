@@ -41,7 +41,7 @@ public class Alt
 	public void login()
 	{
 		
-		if(!getPassword().isEmpty())
+		if(!getPassword().isEmpty() && !getUsername().contains("@alt.com"))
 		{
 			try
 			{

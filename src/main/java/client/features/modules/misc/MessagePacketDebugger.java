@@ -12,7 +12,7 @@ public class MessagePacketDebugger extends Module {
     public void onEvent(Event<?> e){
         if(e instanceof EventPacket){
             if(((EventPacket) e).getPacket().toString().contains("Message")){
-                ChatUtils.printChat(((EventPacket) e).getPacket().toString());
+                ChatUtils.printDebugMessage(((EventPacket) e).getPacket().toString());
             }
         }
     }

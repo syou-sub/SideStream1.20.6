@@ -16,7 +16,6 @@ public class AltManager
 	
 	public void login(Alt alt)
 	{
-		
 		alt.login();
 		
 	}
