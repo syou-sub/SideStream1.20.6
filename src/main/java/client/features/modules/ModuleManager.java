@@ -69,6 +69,9 @@ public class ModuleManager implements MCUtil
 		modules.add(new NoSlowdown());
 		modules.add(new MoreKillEffects());
         modules.add(new ItemRendererTweaker());
+        modules.add(new BetterChat());
+        modules.add(new MessageDebugger());
+        modules.add(new MessagePacketDebugger());
 	}
 	
 	public static class ModuleComparator implements Comparator<Module>
