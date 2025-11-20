@@ -21,9 +21,11 @@ public class MessageDebugger extends Module
     @Override
     public void onEvent(Event<?> e)
     {
-        if(e instanceof EventReceiveMessage){
-            ChatUtils.printDebugMessage("Chat Literal String :"+ ((EventReceiveMessage) e).getMessageLiteralString());
-            ChatUtils.printDebugMessage("Chat String :" +((EventReceiveMessage) e).getMessageString());
+        if(e instanceof EventReceiveMessage) {
+            if (!((EventReceiveMessage) e).getMessageString().contains(ChatUtils.chatPrefix)) {
+                ChatUtils.printDebugMessage("Chat Literal String :" + ((EventReceiveMessage) e).getMessageLiteralString());
+                ChatUtils.printDebugMessage("Chat String :" + ((EventReceiveMessage) e).getMessageString());
+            }
         }
         super.onEvent(e);
     }
