@@ -169,7 +169,7 @@ targetESP = new BooleanSetting("Target ESP", true);
                 }
             }
         }
-        if(e instanceof EventRender2D){
+        if(e instanceof EventRender3D){
             if( target != null) {
                 RotationUtils rotationUtils = new RotationUtils();
                 if(rotationmode.getMode().equalsIgnoreCase("Normal"))
