@@ -71,9 +71,9 @@ public ArrayList<String> loserList = new ArrayList<>();
     }
     public void sendMessage(String loserName){
         String msgToSay = "";
-        if(mode.is("Admin")){
+        if(messageMode.is("Admin")){
             msgToSay = getRandomAdmin();
-        } else if(mode.is("")){
+        } else if(messageMode   .is("")){
 
         }
        msgToSay = advertise.getValue()? (msgToSay +" "+ " by "+ Client.NAME +" "+ "Client." ): msgToSay;
