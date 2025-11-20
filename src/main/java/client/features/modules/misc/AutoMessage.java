@@ -59,7 +59,7 @@ public ArrayList<String> loserList = new ArrayList<>();
         }
         super.onEvent(e);
         if(e instanceof EventUpdate){
-            setTag(mode.getMode());
+            setTag(mode.getMode() + " ["+loserList.size()+"]");
             if( !loserList.isEmpty() && timer.hasReached(delay.getValue())){
                sendMessage(loserList.getFirst());
                loserList.removeFirst();
