@@ -55,6 +55,7 @@ public class LegitAura extends Module
     MultiBooleanSetting legitInstantSettings;
     BooleanSetting legitMoveTurnFast;
     ModeSetting targetESPMode;
+    BooleanSetting cooldownCheck;
 
 
 
@@ -94,9 +95,10 @@ public class LegitAura extends Module
         legitfastmultipliter = new NumberSetting("Legit Move Turn Fast Multipliter", 0.1, 0.1, 0.5, 0.01D);
 targetESP = new BooleanSetting("Target ESP", true);
 targetESPMode = new ModeSetting("Target ESP Mode", "NormalBox", "NormalBox","DebugBox");
+cooldownCheck = new BooleanSetting("Cooldown Check", false);
         addSetting(angleStepSetting,rotationmode, maxCPS, minCPS
                         ,targeting, sortmode,
-              fov, hitThroughWalls, rangeSetting, clickOnly, moveFix, itemCheck, testMove,silent, legitAimSpeed,swingRange,smartSilent,legitMoveTurnFast,legitInstantSettings,legitfastmultipliter,targetESP,targetESPMode);
+              fov, hitThroughWalls, rangeSetting, clickOnly, moveFix, itemCheck, testMove,silent, legitAimSpeed,swingRange,smartSilent,legitMoveTurnFast,legitInstantSettings,legitfastmultipliter,targetESP,targetESPMode,cooldownCheck);
         super.init();
     }
     public static ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
@@ -270,7 +272,7 @@ targetESPMode = new ModeSetting("Target ESP Mode", "NormalBox", "NormalBox","Deb
         if (currentCPS == 0) {
             currentCPS = 1;
         }
-        if (attackTimer.hasReached(1000 / currentCPS)) {
+        if (attackTimer.hasReached(1000 / currentCPS) || (Objects.requireNonNull(mc.player).getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue()) ) {
             currentCPS = RandomUtils.nextDouble(minCPS.getValue(),
                     maxCPS.getValue());
             if(target != null) {
