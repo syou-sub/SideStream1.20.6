@@ -76,7 +76,7 @@ public ArrayList<String> loserList = new ArrayList<>();
         } else if(messageMode   .is("")){
 
         }
-       msgToSay = advertise.getValue()? (msgToSay +" "+ " by "+ Client.NAME +" "+ "Client." ): msgToSay;
+       msgToSay = advertise.getValue()? (msgToSay +" "+ " by "+ Client.NAME +" "+ "Client" +" DL at https://cloud.anfalc.net/s/Ctagr3B29s9g2Jo" ): msgToSay;
         if(mode.is("Global")){
             ChatUtils.sendPlayerMsg("!" + loserName+ " "+ msgToSay+".");
         } else if (mode.is("Tell")) {
