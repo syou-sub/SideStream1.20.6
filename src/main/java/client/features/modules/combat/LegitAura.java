@@ -54,6 +54,7 @@ public class LegitAura extends Module
     NumberSetting angleStepSetting;
     MultiBooleanSetting legitInstantSettings;
     BooleanSetting legitMoveTurnFast;
+    ModeSetting targetESPMode;
 
 
 
@@ -92,9 +93,10 @@ public class LegitAura extends Module
         legitMoveTurnFast = new BooleanSetting("Legit Move Turn Fast", true);
         legitfastmultipliter = new NumberSetting("Legit Move Turn Fast Multipliter", 0.1, 0.1, 0.5, 0.01D);
 targetESP = new BooleanSetting("Target ESP", true);
+targetESPMode = new ModeSetting("Target ESP Mode", "NormalBox", "NormalBox","DebugBox");
         addSetting(angleStepSetting,rotationmode, maxCPS, minCPS
                         ,targeting, sortmode,
-              fov, hitThroughWalls, rangeSetting, clickOnly, moveFix, itemCheck, testMove,silent, legitAimSpeed,swingRange,smartSilent,legitMoveTurnFast,legitInstantSettings,legitfastmultipliter,targetESP);
+              fov, hitThroughWalls, rangeSetting, clickOnly, moveFix, itemCheck, testMove,silent, legitAimSpeed,swingRange,smartSilent,legitMoveTurnFast,legitInstantSettings,legitfastmultipliter,targetESP,targetESPMode);
         super.init();
     }
     public static ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
@@ -244,9 +246,15 @@ targetESP = new BooleanSetting("Target ESP", true);
                         interpolatedX - entity.getX(),
                         interpolatedY - entity.getY(),
                         interpolatedZ - entity.getZ());
-                RenderingUtils.draw3DBox2(
-                        matrixStack.peek().getPositionMatrix(),
-                        boundingBox, color);
+                if(targetESPMode.is("NormalBox")) {
+                    RenderingUtils.draw3DBox2(
+                            matrixStack.peek().getPositionMatrix(),
+                            boundingBox, color);
+                } else if (targetESPMode.is("DebugBox")) {
+                    RenderingUtils.draw3DDebugBox(matrixStack.peek().getPositionMatrix(),
+                            boundingBox, color);
+
+                }
 
             }
         }
