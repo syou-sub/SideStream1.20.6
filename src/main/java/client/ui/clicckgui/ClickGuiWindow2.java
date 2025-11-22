@@ -117,18 +117,15 @@ public class ClickGuiWindow2
 
         double currentY = y + 18;
         for (File configFile : configs) {
-            if (ClickUtil.isHovered2(x - 2, currentY, x + 122, currentY + 20,
-                    mouseX, mouseY)) {
+            if (ClickUtil.isHovered2(x - 2, currentY, x + 122, currentY + 20, mouseX, mouseY)) {
                 if (button == 0) {
                         if(Client.getConfigManager().loadConfig(configFile.getName())) {
-                            Client.configManager.initCustomConfigs();
                             ChatUtils.printChat("Successfully loaded " + configFile.getName() + " config.");
                         } else {
                             ChatUtils.printChat("Failed to load " + configFile.getName() + " config.");
                         }
                 } else{
                     if(Client.getConfigManager().saveConfig(configFile.getName())) {
-                        Client.configManager.initCustomConfigs();
                         ChatUtils.printChat("Successfully saved " + configFile.getName() + " config.");
                     } else {
                         ChatUtils.printChat("Failed to save " + configFile.getName() + " config.");
