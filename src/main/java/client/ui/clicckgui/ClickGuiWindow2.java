@@ -26,18 +26,12 @@ public class ClickGuiWindow2
     private NumberSetting doubleSetting;
     public Module module;
     private static final int defaultColor = new Color(0, 200, 255,158).getRGB();
-    private static final Color backColor = new Color(0x67373737, true);
     private static final int outlineColor1 = Colors.getColor(0, 0, 0, 50);
-    private static final Color outlineColor2 = new Color(0xff313131);
-    private static final int settingTextColor = 0xffd0d0d0;
 
     private float x, y, lastX, lastY;
     private boolean dragging = false, expand = true;
 
     private List<File> configs;
-    int keyCode;
-    KeyBindSetting keyBindSetting = null;
-    private static boolean clicked = false;
     public int width;
     public int height;
 
@@ -45,14 +39,15 @@ public class ClickGuiWindow2
     {
         this.x = x;
         this.y = y;
-        configs = Client.configManager.getCustomConfigs().stream()
-                .collect(Collectors.toList());
+        Client.configManager.initCustomConfigs();
+        configs = Client.configManager.getCustomConfigs();
+
     }
 
     public void init()
     {
-        configs = Client.configManager.getCustomConfigs().stream()
-                .collect(Collectors.toList());
+        Client.configManager.initCustomConfigs();
+        configs = Client.configManager.getCustomConfigs();
     }
 
     public void setSize(int width, int height)
@@ -90,26 +85,9 @@ public class ClickGuiWindow2
                     currentY + 20);
             drawRect(stack, outlineColor1, x - 1, currentY, x + 121,
                     currentY + 19);
-            //  drawRect(stack,
-            //        m.isEnabled() ? defaultColor : backColor.getRGB(), x,
-            //      currentY, x + 120, currentY + 18);
-            //     if(configFile.getKeyCode() == 0|| m.getKeyCode() == GLFW.GLFW_KEY_RIGHT_SHIFT|| (GLFW.glfwGetKeyName(m.getKeyCode(), 1)) == null)
-            //  {
             Fonts.font.drawString(stack, configFile.getName(),
                     x + 116 - Fonts.font.getStringWidth(configFile.getName()),
                     currentY + 4, -1);
-            //   }
-            /* else if(((GLFW.glfwGetKeyName(m.getKeyCode(), 1)) != null))
-            {
-                String displayKeyCode = String.format("%s [%s]", m.getName(),
-                        Objects.requireNonNull(GLFW.glfwGetKeyName(m.getKeyCode(), 1)).toUpperCase());
-                Fonts.font.drawString(stack,displayKeyCode,
-                        x + 116 - Fonts.font.getStringWidth(displayKeyCode),
-                        currentY + 4, -1);
-            }
-
-             */
-
             currentY += 18;
 
         }
@@ -175,8 +153,5 @@ public class ClickGuiWindow2
 
     }
 
-    public void onClose()
-    {
-        clicked = false;
-    }
+
 }
