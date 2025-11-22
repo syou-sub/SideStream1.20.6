@@ -60,7 +60,6 @@ public class ClickGui extends Screen
 		partialTicks = delta;
 		double per = animationUtil.uodate(0.05).calcPercent();
 		stack.push();
-
 		stack.translate((float) window.getScaledWidth() / 4, (float) window.getScaledHeight() / 4, 0);
 		//stack.scale(size,size, 0);
 		stack.translate((float) -window.getScaledWidth() / 4, (float) -window.getScaledHeight() / 4, 0);

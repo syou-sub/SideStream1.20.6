@@ -1,5 +1,6 @@
 package client.mixin.client;
 
+import client.Client;
 import client.alts.Alt;
 import client.ui.gui.altmanager.screens.AltManagerScreen;
 import net.minecraft.client.MinecraftClient;
@@ -58,18 +59,17 @@ public class MixinMultiplayerScreen extends Screen
                         })
                 .dimensions(300, 4, 400, 20).build());
 	}
+    @Unique
     public String loginWithTheAlteningClipboard() throws IOException, UnsupportedFlavorException {
         //Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
         // クリップボードの内容を取得
       //  Transferable t = clipboard.getContents(null);
-
         String text = MinecraftClient.getInstance().keyboard.getClipboard();
         // テキストとして取り出す
         if (text !=null &&text.contains("@alt.com")) {
-
                 Alt alt = new Alt(text, "");
                 alt.login();
+            Client.altManager.alts.add(new Alt(text, ""));
                 return text;
         }
         return null;
