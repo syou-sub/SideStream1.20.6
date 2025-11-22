@@ -17,6 +17,7 @@ import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 public class AutoMessage extends Module
@@ -38,7 +39,7 @@ public ArrayList<String> loserList = new ArrayList<>();
         super.init();
         mode = new ModeSetting("Mode", "Global", "Tell","Global");
         this.delay = new NumberSetting("Message Delay", 1000, 1000, 5000, 1000F);
-        messageMode = new ModeSetting("Message Mode" ,"Admin", "Admin");
+        messageMode = new ModeSetting("Message Mode" ,"Admin", "Admin","YangKZ");
         advertise = new BooleanSetting("Advertise", true);
         addSetting(delay,mode,messageMode,advertise);
     }
@@ -49,7 +50,8 @@ public ArrayList<String> loserList = new ArrayList<>();
             String message = ((EventReceiveMessage) e).getMessageString();
             if (!message.contains(ChatUtils.chatPrefix)) {
                 String[] messageArray = null;
-               if(message.startsWith(mc.player.getName().getLiteralString()) && message.contains("killed"))
+                assert mc.player != null;
+                if(message.startsWith(Objects.requireNonNull(mc.player.getName().getLiteralString())) && message.contains("killed"))
                {
                  messageArray = message.split(" ");
                  String user  = messageArray[2].replaceAll("\\(.+?\\)", "");
@@ -60,7 +62,7 @@ public ArrayList<String> loserList = new ArrayList<>();
         }
         super.onEvent(e);
         if(e instanceof EventUpdate){
-            setTag(mode.getMode() + " ["+loserList.size()+"]");
+            setTag(mode.getMode() + " "+ messageMode.getMode()+ " ["+loserList.size()+"]");
             if(!loserList.isEmpty() && timer.hasReached(delay.getValue())){
                sendMessage(loserList.getFirst());
                loserList.removeFirst();
@@ -73,10 +75,10 @@ public ArrayList<String> loserList = new ArrayList<>();
         String msgToSay = "";
         if(messageMode.is("Admin")){
             msgToSay = getRandomAdmin();
-        } else if(messageMode   .is("")){
-
+        } else if(messageMode.is("YangKZ")){
+msgToSay = getRandomYangKZ();
         }
-       msgToSay = advertise.getValue()? (msgToSay +" "+ " by "+ Client.NAME +" "+ "Client" +" DL at https://cloud.anfalc.net/s/Ctagr3B29s9g2Jo" ): msgToSay;
+       msgToSay = advertise.getValue()? (msgToSay +" "+ " by "+ Client.NAME +" "+ "Client" +" DL at https://cloud.anfalc.net/s/Ctagr3B29s9g2Jo"+ " contact me at jill_0123" ): msgToSay;
         if(mode.is("Global")){
             ChatUtils.sendPlayerMsg("!" + loserName+ " "+ msgToSay+".");
         } else if (mode.is("Tell")) {
@@ -90,7 +92,12 @@ public ArrayList<String> loserList = new ArrayList<>();
         int randomIndex = random.nextInt(strings.length);
         return strings[randomIndex];
     }
-
+    public String getRandomYangKZ() {
+        String[] strings = getYangKZ();
+        Random random = new Random();
+        int randomIndex = random.nextInt(strings.length);
+        return strings[randomIndex];
+    }
     public String[] getAdministrators()
     {
         return new String[]{"ACrispyTortilla", "ArcticStorm141", "ArsMagia",
@@ -106,6 +113,28 @@ public ArrayList<String> loserList = new ArrayList<>();
                 "LegendaryAlex", "LaukNLoad", "M4bi", "HellionX2", "Ktrompfl",
                 "Bupin", "Murgatron", "Outra", "CoastinJosh", "sabau", "Axyy",
                 "lPirlo", "ImAbbyy"};
+    }
+    public String[] getYangKZ(){
+        return new String[]{
+               " ヤン ヤン ヤンケージー",
+
+
+
+                "黒ギャルの 肌を 嗅ぎ舐めたい",
+
+               " 人妻 って聞いた瞬間フル勃起",
+
+                "ち♡こ ま♡こ 珍子満子",
+
+
+       " あなたとちんぐりまんぐり珍子満子",
+        "朝までちんぐりまんぐり珍子満子",
+                "身長の高い女の子の足と脇をくんくん",
+
+       " ち♡こ ま♡こ 珍子満子",
+      "  あなたとちんぐりまんぐり珍子満子",
+       " 朝までちんぐりまんぐり珍子満子",
+        };
     }
 
 }

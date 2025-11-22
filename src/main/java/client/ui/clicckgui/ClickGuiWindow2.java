@@ -1,10 +1,7 @@
 package client.ui.clicckgui;
 
 import client.Client;
-import client.config.Config;
-import client.config.ConfigManager;
 import client.features.modules.Module;
-import client.features.modules.ModuleManager;
 import client.settings.*;
 
 import client.utils.ChatUtils;
@@ -12,13 +9,10 @@ import client.utils.Colors;
 import client.utils.font.Fonts;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
-import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.io.File;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static client.utils.RenderingUtils.drawRect;
@@ -148,19 +142,18 @@ public class ClickGuiWindow2
             if (ClickUtil.isHovered2(x - 2, currentY, x + 122, currentY + 20,
                     mouseX, mouseY)) {
                 if (button == 0) {
-                    try {
-                        Client.getConfigManager().loadConfig(configFile.getName());
-                        ChatUtils.printChat("Successfully loaded "+ configFile.getName()+ " config." );
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
+                        if(Client.getConfigManager().loadConfig(configFile.getName())) {
+                            Client.configManager.initCustomConfigs();
+                            ChatUtils.printChat("Successfully loaded " + configFile.getName() + " config.");
+                        } else {
+                            ChatUtils.printChat("Failed to load " + configFile.getName() + " config.");
+                        }
                 } else{
-                    try{
-                        Client.getConfigManager().saveConfig(configFile.getName());
-                        ChatUtils.printChat("Successfully saved "+ configFile.getName()+ " config." );
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    if(Client.getConfigManager().saveConfig(configFile.getName())) {
+                        Client.configManager.initCustomConfigs();
+                        ChatUtils.printChat("Successfully saved " + configFile.getName() + " config.");
+                    } else {
+                        ChatUtils.printChat("Failed to save " + configFile.getName() + " config.");
                     }
                 }
                 return;

@@ -32,9 +32,7 @@ public final class AddAltScreen extends AltEditorScreen
 	{
 		String nameOrEmail = getNameOrEmail();
 		String password = getPassword();
-		
 		Client.altManager.alts.add(new Alt(nameOrEmail, password));
-		
 		client.setScreen(prevScreen);
 	}
 }

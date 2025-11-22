@@ -24,9 +24,13 @@ if(args.length== 0){
 	ChatUtils.printChat("Please enter load, save, delete, list.");
 	return true;
 }
+        if(args[1] == null){
+            return true;
+        }
 		switch(args[0].toLowerCase())
 		{
-			
+
+
 			case "load":
 			if(Client.getConfigManager().loadConfig(args[1]))
 			{
@@ -43,7 +47,6 @@ if(args.length== 0){
 			{
 				ChatUtils.printChat(
 					String.format("Successfully saved config: '%s'", args[1]));
-                Client.configManager.reloadConfig();
 			}else
 			{
 				ChatUtils.printChat(
@@ -55,7 +58,6 @@ if(args.length== 0){
 			{
 				ChatUtils.printChat(String
 					.format("Successfully deleted config: '%s'", args[1]));
-                Client.configManager.reloadConfig();
 			}else
 			{
 				ChatUtils.printChat(String.format("Failed to delete config: '%s'", args[1]));

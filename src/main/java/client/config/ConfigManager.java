@@ -11,7 +11,6 @@ import client.features.modules.Module;
 import client.features.modules.ModuleManager;
 import client.settings.*;
 import client.utils.Logger;
-import com.mojang.datafixers.kinds.Kind1;
 import org.apache.commons.io.FilenameUtils;
 /*    */ import java.io.*;
 import java.util.ArrayList;
@@ -25,12 +24,10 @@ public class ConfigManager
 	public List<Config> contents;
 	private List<File> customConfigs = new ArrayList<>();
 	
-	public static final File CONFIGS_DIR =
-		new File(Client.FOLDER, "CustomConfigs");
-	
+	public static final File CUSTOM_CONFIGS_DIR = new File(Client.FOLDER, "CustomConfigs");
 	public ConfigManager()
 	{
-		setCustomConfigs(loadConfigs());
+		setCustomConfigs(loadCustomConfigs());
 		Logger.logConsole("loading files...");
 		this.contents = new ArrayList<>();
 		add(AltConfig.class);
@@ -122,9 +119,9 @@ public class ConfigManager
 		return true;
 	}
 	
-	public void init()
+	public void initCustomConfigs()
 	{
-		setCustomConfigs(loadConfigs());
+		setCustomConfigs(loadCustomConfigs());
 	}
 	
 	public void setCustomConfigs(final ArrayList<File> contents)
@@ -162,14 +159,14 @@ public class ConfigManager
 		return false;
 	}
 	
-	private static ArrayList<File> loadConfigs()
+	private static ArrayList<File> loadCustomConfigs()
 	{
 		final ArrayList<File> loadedConfigs = new ArrayList<>();
-		if(!CONFIGS_DIR.exists())
+		if(!CUSTOM_CONFIGS_DIR.exists())
 		{
-			CONFIGS_DIR.mkdir();
+			CUSTOM_CONFIGS_DIR.mkdir();
 		}
-		final File[] files = CONFIGS_DIR.listFiles();
+		final File[] files = CUSTOM_CONFIGS_DIR.listFiles();
 		if(files != null)
 		{
 			for(final File file : files)
@@ -191,7 +188,7 @@ public class ConfigManager
 			if(config.getName().equalsIgnoreCase(configName))
 				return config;
 		}
-		File file2 = new File(CONFIGS_DIR, configName + ".json");
+		File file2 = new File(CUSTOM_CONFIGS_DIR, configName + ".json");
 		
 		if(file2.exists())
 			return file2;
@@ -201,7 +198,7 @@ public class ConfigManager
 	
 	public File createConfig(String name)
 	{
-		File file = new File(CONFIGS_DIR, name + ".json");
+		File file = new File(CUSTOM_CONFIGS_DIR, name + ".json");
 		
 		if(!file.exists())
 		{
