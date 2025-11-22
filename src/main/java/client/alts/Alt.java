@@ -37,7 +37,6 @@ public class Alt
 		this.password = password;
 		this.mask = mask;
 	}
-	
 	public void login()
 	{
 		

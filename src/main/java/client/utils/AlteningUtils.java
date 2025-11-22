@@ -37,7 +37,6 @@ public class AlteningUtils implements MCUtil{
         WaybackAuthLib auth = new WaybackAuthLib(ENVIRONMENT.servicesHost());
         auth.setUsername(s);
         auth.setPassword("aa");
-
         return auth;
     }
     public static void setSession(Session session) {
