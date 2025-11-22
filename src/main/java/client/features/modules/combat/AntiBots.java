@@ -5,6 +5,8 @@ import client.event.listeners.EventUpdate;
 import client.features.modules.Module;
 import client.features.modules.ModuleManager;
 import client.settings.ModeSetting;
+import client.settings.NumberSetting;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Objects;
@@ -16,16 +18,18 @@ public final class AntiBots extends Module
 	{
 		super("AntiBots", 0, Category.COMBAT);
 	}
-	
-	static ModeSetting mode;
+
+	public static ModeSetting mode;
+    public static NumberSetting ping;
 	
 	@Override
 	public void init()
 	{
 		super.init();
+        ping = new NumberSetting("Ping ", 50, 0,300,50);
 		mode = new ModeSetting("Mode ", "Shotbow",
 			new String[]{"Hypixel", "Shotbow", "ShotbowTeams"});
-		addSetting(mode);
+		addSetting(mode,ping);
 	}
 	
 	public void onEvent(Event<?> e)
@@ -85,13 +89,14 @@ public final class AntiBots extends Module
 	
 	public static boolean isBot(PlayerEntity e)
 	{
-		if(!(ModuleManager.getModulebyClass(AntiBots.class).isEnabled()))
-			return false;
+        PlayerListEntry ple = Objects.requireNonNull(mc.getNetworkHandler()).getPlayerListEntry(e.getUuid());
+		if(!(ModuleManager.getModulebyClass(AntiBots.class).isEnabled())) return false;
 		return switch(mode.getMode())
 		{
-			case "Shotbow" -> e.getTeamColorValue() == 16777215;
+            case "Shotbow" -> e.getTeamColorValue() == 16777215;
 			case "Hypixel" -> isHypixelBot(e);
 			case "ShotbowTeams" -> e.getTeamColorValue() == 0;
+            case "Ping" -> ple.getLatency() < ping.getValue();
 			default -> false;
 		};
 	}

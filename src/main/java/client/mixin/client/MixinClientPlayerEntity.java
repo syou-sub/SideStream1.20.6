@@ -82,8 +82,6 @@ public class MixinClientPlayerEntity
 		return original.call(instance);
 	}
 
-
-
 	@Redirect(method = "sendMovementPackets",
 		at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/client/network/ClientPlayerEntity;getPitch()F"))

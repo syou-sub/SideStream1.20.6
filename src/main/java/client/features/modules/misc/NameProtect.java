@@ -3,6 +3,7 @@ package client.features.modules.misc;
 import client.Client;
 import client.event.Event;
 import client.event.listeners.EventPacket;
+import client.event.listeners.EventReceiveMessage;
 import client.features.modules.Module;
 import client.utils.ChatUtils;
 import net.minecraft.network.packet.Packet;
@@ -21,25 +22,14 @@ public class NameProtect extends Module
 	@Override
 	public void onEvent(Event<?> e)
 	{
-		if(e instanceof EventPacket event)
-		{
-            if(event.isIncoming())
-			{
-				Packet<?> p = event.getPacket();
-				if(p instanceof ChatMessageS2CPacket packet)
-				{
-					if(Objects.requireNonNull(Objects.requireNonNull(packet.unsignedContent())
-                            .getLiteralString()).contains(Objects.requireNonNull(Objects.requireNonNull(mc.player).getName().getLiteralString())))
-					{
-						String temp = packet.unsignedContent().getLiteralString();
-						ChatUtils.printChatNoName(
-							temp.replaceAll(String.valueOf(mc.player.getName().getLiteralString()), "\247d" + Client.NAME + "User" + "\247r"));
-						event.setCancelled(true);
-					}
-				}
-				
-			}
-		}
+        if(e instanceof EventReceiveMessage){
+            if(((EventReceiveMessage) e).getMessageString().contains(mc.player.getName().getLiteralString())){
+                String temp = ((EventReceiveMessage) e).getMessageString();
+                ChatUtils.printChatNoName(
+                        temp.replaceAll(String.valueOf(mc.player.getName().getLiteralString()), "\247d" + Client.NAME + "User" + "\247r"));
+                e.setCancelled(true);
+            }
+        }
 		super.onEvent(e);
 	}
 	

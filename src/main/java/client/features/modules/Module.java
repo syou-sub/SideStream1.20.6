@@ -134,6 +134,9 @@ public class Module
 	
 	public void onEvent(Event<?> e)
 	{
+        if(mc.player ==null || mc.world == null){
+            return;
+        }
 		if(e instanceof EventUpdate){
 			onUpdate((EventUpdate) e);
 		}

@@ -39,7 +39,6 @@ public class ChatUtils implements MCUtil
 		if(text !=null) {
             mc.inGameHud.getChatHud().addMessage(Text.of((text)));
         }
-		
 	}
     private static MutableText getCustomPrefix(String prefixTitle, Formatting prefixColor) {
         MutableText prefix = Text.empty();
