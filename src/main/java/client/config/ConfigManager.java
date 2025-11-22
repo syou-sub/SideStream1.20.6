@@ -27,7 +27,7 @@ public class ConfigManager
 	public static final File CUSTOM_CONFIGS_DIR = new File(Client.FOLDER, "CustomConfigs");
 	public ConfigManager()
 	{
-		setCustomConfigs(loadCustomConfigs());
+		initCustomConfigs();
 		Logger.logConsole("loading files...");
 		this.contents = new ArrayList<>();
 		add(AltConfig.class);
