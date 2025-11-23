@@ -8,7 +8,10 @@ import client.settings.ModeSetting;
 import client.settings.NumberSetting;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 
+import java.util.Collection;
 import java.util.Objects;
 
 public final class AntiBots extends Module
@@ -26,9 +29,9 @@ public final class AntiBots extends Module
 	public void init()
 	{
 		super.init();
-        ping = new NumberSetting("Ping ", 50, 0,300,50);
+        ping = new NumberSetting("Ping ", 50, 0,300,10);
 		mode = new ModeSetting("Mode ", "Shotbow",
-			new String[]{"Hypixel", "Shotbow", "ShotbowTeams"});
+			new String[]{"Hypixel", "Shotbow", "ShotbowTeams", "Ping"});
 		addSetting(mode,ping);
 	}
 	
@@ -86,6 +89,15 @@ public final class AntiBots extends Module
 		}
 		return true;
 	}
+    private static boolean hasLeatherArmor(final PlayerEntity entity)
+    {
+        return entity.getInventory().getStack(1).getItem() == Items.LEATHER_CHESTPLATE || entity.getInventory().getStack(0).getItem() == Items.LEATHER_HELMET || entity.getInventory().getStack(2).getItem() == Items.LEATHER_LEGGINGS || entity.getInventory().getStack(1).getItem() == Items.LEATHER_BOOTS;
+    }
+    public static boolean isDuplicated (PlayerEntity entity){
+        String entityName = entity.getName().getLiteralString();
+        return false;
+
+    }
 	
 	public static boolean isBot(PlayerEntity e)
 	{
@@ -93,11 +105,21 @@ public final class AntiBots extends Module
 		if(!(ModuleManager.getModulebyClass(AntiBots.class).isEnabled())) return false;
 		return switch(mode.getMode())
 		{
-            case "Shotbow" -> e.getTeamColorValue() == 16777215;
+            case "Shotbow" -> {
+                if( ple == null){
+                    yield false;
+                }
+                yield  ple.getLatency() < 30 && hasLeatherArmor(e);
+            }
 			case "Hypixel" -> isHypixelBot(e);
-			case "ShotbowTeams" -> e.getTeamColorValue() == 0;
-            case "Ping" -> ple.getLatency() < ping.getValue();
-			default -> false;
+			case "ShotbowTeams" -> e.getTeamColorValue() == 16777215;
+            case "Ping" -> {
+                if( ple == null){
+                    yield false;
+                }
+                yield ple.getLatency() < ping.getValue();
+            }
+            default -> false;
 		};
 	}
 	

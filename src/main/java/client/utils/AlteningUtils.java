@@ -43,7 +43,6 @@ public class AlteningUtils implements MCUtil{
         Client.IMC.setSession(session);
     }
 
-
     public static void applyLoginEnvironment(YggdrasilAuthenticationService authService, MinecraftSessionService sessService) {
         MinecraftClientAccessor mca = (MinecraftClientAccessor) mc;
         mca.setAuthenticationService(authService);

@@ -25,8 +25,7 @@ public class NameProtect extends Module
         if(e instanceof EventReceiveMessage){
             if(((EventReceiveMessage) e).getMessageString().contains(mc.player.getName().getLiteralString())){
                 String temp = ((EventReceiveMessage) e).getMessageString();
-                ChatUtils.printChatNoName(
-                        temp.replaceAll(String.valueOf(mc.player.getName().getLiteralString()), "\247d" + Client.NAME + "User" + "\247r"));
+                ChatUtils.printChatNoName(temp.replaceAll(String.valueOf(mc.player.getName().getLiteralString()), "\247d" + Client.NAME + "User" + "\247r"));
                 e.setCancelled(true);
             }
         }

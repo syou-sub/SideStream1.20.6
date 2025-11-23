@@ -364,7 +364,6 @@ public final class RotationUtils implements MCUtil{
 				finishedYaw,finishedPitch
 		};
 	}
-
 	private float lerp(float a, float b, float t) {
 
 		return a + (b - a) * t;

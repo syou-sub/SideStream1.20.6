@@ -23,7 +23,7 @@ public class AntiVoid extends Module {
             }
 
             if (isVoid) {
-                mc.player.setVelocity(mc.player.getVelocity().x, 1, mc.player.getVelocity().z);
+                mc.player.setVelocity(mc.player.getVelocity().x, mc.player.getVelocity().y, 0);
             }
         }
 

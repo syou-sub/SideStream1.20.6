@@ -73,7 +73,7 @@ public class LegitAura extends Module
         targeting.addValue("Targeting Mobs",true);
         targeting.addValue("Ignore Teams", true);
         targeting.addValue("Targeting Invisibles", false);
-        rangeSetting = new NumberSetting("Range", 3.1, 3.0,4.2, 0.1);
+        rangeSetting = new NumberSetting("Range", 3.1, 3.0,4.2, 0.01);
         swingRange = new NumberSetting("Swing Range",4.2, 3.0, 6.0, 0.1);maxCPS = new NumberSetting("MaxCPS", 7, 2, 20, 1f);
         minCPS = new NumberSetting("MinCPS", 6, 1, 19, 1f);
         sortmode = new ModeSetting("SortMode", "Angle", new String[]{"Angle","HurtTime","Distance", "Cycle"});

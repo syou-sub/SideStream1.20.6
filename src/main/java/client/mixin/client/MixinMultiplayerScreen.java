@@ -3,23 +3,24 @@ package client.mixin.client;
 import client.Client;
 import client.alts.Alt;
 import client.ui.gui.altmanager.screens.AltManagerScreen;
+import client.utils.AlteningUtils;
+import client.utils.Logger;
 import com.google.gson.Gson;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.datatransfer.*;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -30,15 +31,22 @@ import java.net.http.HttpResponse;
 import java.util.Objects;
 
 @Mixin(MultiplayerScreen.class)
-public class MixinMultiplayerScreen extends Screen
+public abstract class MixinMultiplayerScreen extends Screen
 {
-	@Unique
+    @Shadow
+    protected abstract void refresh();
+
+    @Unique
 	private ButtonWidget altsButton;
     @Unique
     private ButtonWidget theAlteningButton;
     @Unique ButtonWidget theAlteningAPIButton;
-
+    @Unique
+    private ButtonWidget theAlteningCopyButton;
+@Unique
     private String username;
+@Unique
+    private String token;
 	
 	protected MixinMultiplayerScreen(Text title)
 	{
@@ -60,23 +68,34 @@ public class MixinMultiplayerScreen extends Screen
                 .builder(Text.literal("TheAltening Clipboard Login"),
                         b -> {
                             try {
-                               username = loginWithTheAlteningClipboard();
+                               token = loginWithTheAlteningClipboard();
                             } catch (IOException | UnsupportedFlavorException e) {
                                 throw new RuntimeException(e);
                             }
                         })
-                .dimensions(300, 4, 400, 20).build());
+                .dimensions(100, 4, 150, 20).build());
         addDrawableChild(theAlteningAPIButton = ButtonWidget
                 .builder(Text.literal("TheAltening API Login"),
                         b -> {
                             try {
-                                username = loginWithTheAlteningAPIClipboard();
+                                token = loginWithTheAlteningAPIClipboard();
                             } catch (IOException | InterruptedException |
                                      URISyntaxException e) {
                                 throw new RuntimeException(e);
                             }
                         })
-                .dimensions(300, 4, 400, 20).build());
+                .dimensions(300, 4, 150, 20).build());
+        addDrawableChild(theAlteningCopyButton = ButtonWidget
+                .builder(Text.literal("Copy TheAltening Current Token"),
+                        b -> {
+                    if(token != null) {
+                        String text = token;
+                        StringSelection selection = new StringSelection(text);
+                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                        clipboard.setContents(selection, null);
+                    }
+                        })
+                .dimensions(500, 4, 300, 20).build());
 	}
     @Unique
     public String loginWithTheAlteningClipboard() throws IOException, UnsupportedFlavorException {
@@ -85,31 +104,43 @@ public class MixinMultiplayerScreen extends Screen
       //  Transferable t = clipboard.getContents(null);
         String text = MinecraftClient.getInstance().keyboard.getClipboard();
         // テキストとして取り出す
-        if (text !=null &&text.contains("@alt.com")) {
-                Alt alt = new Alt(text, "");
-                alt.login();
+        if (text !=null && text.contains("@alt.com")) {
+            AlteningUtils.login(text);
             Client.altManager.alts.add(new Alt(text, ""));
+            this.refresh();
                 return text;
         }
         return null;
     }
     @Unique
     public String loginWithTheAlteningAPIClipboard() throws IOException, InterruptedException, URISyntaxException {
-        String apiKey = MinecraftClient.getInstance().keyboard.getClipboard();
+        String clipboard = MinecraftClient.getInstance().keyboard.getClipboard();
+        if(!clipboard.contains("api"))
+            return null;
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(new URI("https://api.thealtening.com/v2/generate?key=" + apiKey)).GET().build();
+        HttpRequest request = HttpRequest.newBuilder().uri(new URI("https://api.thealtening.com/v2/generate?key=" + clipboard)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String body = response.body().replace("\\\"", "");
-        String[] sBody = body.split(":");
-        String token = sBody[1];
-        // テキストとして取り出す
-        if (token !=null &&token.contains("@alt.com")) {
-            Alt alt = new Alt(token, "");
-            alt.login();
+        client.close();
+        String[] bodies = response.body().split(",");
+        String body = bodies[0].replace("\"", "");
+        String[] body2 = body.split(":");
+        String token = body2[1];
+        Logger.logConsole(token);
+        if (token != null && token.contains("@alt.com")) {
+            AlteningUtils.login(token);
             Client.altManager.alts.add(new Alt(token, ""));
+            this.refresh();
             return token;
         }
         return null;
+    }
+    public void render(DrawContext context, int mouseX, int mouseY, float delta){
+        super.render(context, mouseX,mouseY,delta);
+        context.drawCenteredTextWithShadow(textRenderer,
+                "Logged in as:"
+                        + MinecraftClient.getInstance().getSession().getUsername()
+                        + "    Token: " + token,
+                width / 2, 14, 16777215);
     }
 
 	

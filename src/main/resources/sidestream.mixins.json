@@ -4,27 +4,30 @@
   "package": "client.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ClientConnectionInit",
     "IEntityVelocityUpdateS2CPacketMixin",
+    "MinecraftClientAccessor",
     "MixinClientConnection",
     "MixinClientPlayerEntity",
     "MixinGameRenderer",
     "MixinIngameHud",
     "MixinKeyboard",
     "MixinPlayerEntity",
-    "MinecraftClientAccessor",
+    "Vec3dMixin",
     "YggdrasilMinecraftSessionServiceAccessor"
   ],
   "client": [
+    "InGameOverlayRendererMixin",
+    "KeyboardInputMixin",
+    "MixinBlock",
     "MixinChatHud",
     "MixinChatHudLine",
-    "MixinHeldItemRenderer",
-    "RenderTickCounterAccessor",
-    "KeyboardInputMixin",
     "MixinChatScreen",
     "MixinClientPlayerInteractionManager",
     "MixinEntity",
     "MixinEntityRenderDispatcher",
     "MixinEntityRenderer",
+    "MixinHeldItemRenderer",
     "MixinLogoDrawer",
     "MixinMinecraftClient",
     "MixinMouse",
@@ -33,10 +36,10 @@
     "MixinScreen",
     "MixinSimpleOption",
     "MixinWorldRenderer",
-    "RenderTickCounterMixin",
+    "MultiplayerScreenOpen",
     "RenderTickCounterAccessor",
-    "InGameOverlayRendererMixin",
-    "MixinBlock"
+    "RenderTickCounterMixin",
+    "ScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -74,6 +74,7 @@ public class ModuleManager implements MCUtil
         modules.add(new MessagePacketDebugger());
         modules.add(new AutoMessage());
         modules.add(new AntiImmobilizer());
+        modules.add(new Step());
 	}
 	
 	public static class ModuleComparator implements Comparator<Module>
