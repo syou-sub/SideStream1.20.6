@@ -319,7 +319,6 @@ cooldownCheck = new BooleanSetting("Cooldown Check", false);
             }
             if(entity.isInvisible() && !targetInvisibles)
                 return false;
-
             if(!RotationUtils.fov(entity, fov.value))
                 return false;
             if(!Objects.requireNonNull(mc.player).canSee(entity) && !hitThroughWalls.isEnabled())

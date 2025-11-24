@@ -95,7 +95,7 @@ public abstract class MixinMultiplayerScreen extends Screen
                         clipboard.setContents(selection, null);
                     }
                         })
-                .dimensions(500, 4, 300, 20).build());
+                .dimensions(500, 4, 200, 20).build());
 	}
     @Unique
     public String loginWithTheAlteningClipboard() throws IOException, UnsupportedFlavorException {
