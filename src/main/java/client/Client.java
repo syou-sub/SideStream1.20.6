@@ -7,6 +7,7 @@ import client.event.Event;
 import client.event.listeners.EventMotion;
 import client.features.modules.ModuleManager;
 import client.mixin.mixininterface.IMinecraftClient;
+import client.proxy.Config;
 import client.ui.BackgroundManager;
 import client.ui.HUD2;
 import client.utils.MCTimerUtil;
@@ -46,6 +47,7 @@ public class Client
 		altManager = new AltManager();
 		configManager = new ConfigManager();
 		skywarsKillEffect = new SkywarsKillEffect();
+		Config.loadConfig();
 	}
 	
 	public static Event<?> onEvent(Event<?> e)

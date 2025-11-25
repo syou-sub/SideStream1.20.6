@@ -120,7 +120,6 @@ public abstract class MixinMultiplayerScreen extends Screen
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(new URI("https://api.thealtening.com/v2/generate?key=" + clipboard)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        client.close();
         String[] bodies = response.body().split(",");
         String body = bodies[0].replace("\"", "");
         String[] body2 = body.split(":");
