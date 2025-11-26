@@ -17,17 +17,19 @@
 
 package client.utils;
 
+import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.*;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public final class RotationUtils implements MCUtil{
 	public static float virtualYaw, virtualPitch, virtualPrevYaw,
@@ -46,6 +48,28 @@ public final class RotationUtils implements MCUtil{
 			mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()),
 			mc.player.getZ());
 	}
+
+	  public static double getWrappedYawEntity(Entity entity) {
+      return ((double)(mc.player.getYaw() - getNeededEntityYaw((Entity)entity)) % 360.0D + 540.0D) % 360.0D - 180.0D;
+   }
+
+   public static float getNeededEntityYaw(Entity entity) {
+      double diffX = entity.getX() - mc.player.getX() ;
+      double diffZ = entity.getZ() - mc.player.getZ() ;
+      double targetAngle = Math.atan2(diffX, diffZ) * RAD_TO_DEG;
+      return (float)(targetAngle * -1.0D);
+   }
+	
+   public static double getFixedRotationDifferencePitch(Entity entity, float targetHeight) {
+      return (double)(mc.player.getPitch() - getRotationDifferencePitch((Entity)entity, (float)targetHeight));
+   }
+
+   public static float getRotationDifferencePitch(Entity entity, float targetHeight) {
+      double distance = mc.player.distanceTo(entity);
+      double yDiff = (((Entity)entity).getY() + (double)targetHeight) - (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose())) ;
+      double differencePitch = Math.atan2(distance, yDiff) * RAD_TO_DEG;
+      return (float)(differencePitch);
+   }
 	public static float[] getAngleToBlockPos(final BlockPos pos)
 	{
 		return calcAngle(mc.player.getEyePos(), getNearestBlockPos(pos));

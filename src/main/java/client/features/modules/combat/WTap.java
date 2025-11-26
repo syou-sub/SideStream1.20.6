@@ -10,6 +10,7 @@ package client.features.modules.combat;
 import java.util.concurrent.ThreadLocalRandom;
 
 import client.event.Event;
+import client.event.listeners.EventAttack;
 import client.event.listeners.EventRender2D;
 import client.features.modules.Module;
 import client.settings.NumberSetting;
@@ -40,7 +41,7 @@ public class WTap
     
     
   public void onEvent(Event<?> event){
-        if(event instanceof EventRender2D){
+        if(event instanceof EventAttack){
             if (mc.player == null) {
                 return;
             }
@@ -53,7 +54,7 @@ public class WTap
                 return;
             }
             if ((mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.ENTITY&& mc.options.attackKey.isPressed())||(  LegitAura.target!= null && LegitAura.targets.size()==1)) {
-                LivingEntity target = mc.crosshairTarget== null? LegitAura.target: (LivingEntity) mc.targetedEntity;
+                LivingEntity target = mc.crosshairTarget== null ? LegitAura.target: (LivingEntity) mc.targetedEntity;
                 if (target == null) {
                     return;
                 }

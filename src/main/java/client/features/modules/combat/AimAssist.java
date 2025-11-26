@@ -2,6 +2,7 @@ package client.features.modules.combat;
 
 import client.event.Event;
 import client.event.listeners.EventRender3D;
+import client.event.listeners.EventRenderGame;
 import client.features.modules.Module;
 import client.settings.BooleanSetting;
 import client.settings.ModeSetting;
@@ -10,6 +11,7 @@ import client.utils.PlayerHelper;
 import client.utils.RandomUtils;
 import client.utils.RotationUtils;
 import client.utils.ServerHelper;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder.Living;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -22,22 +24,30 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AimAssist extends Module
 {
 	
-	private final List<LivingEntity> targets = new ArrayList<>();
+	public static List<LivingEntity> targets = new ArrayList<>();
 	public static Entity target = null;
 	BooleanSetting ignoreTeamsSetting;
-	BooleanSetting notHolding;
-	NumberSetting aimSpeedSetting;
 	NumberSetting rangeSetting;
 	BooleanSetting targetMonstersSetting;
 	BooleanSetting targetAnimalsSetting;
 	NumberSetting fov;
 	ModeSetting sortmode;
 	BooleanSetting ignoreBreaking;
-	
+	NumberSetting randomYaw;
+	BooleanSetting setPitchSetting;
+	public static BooleanSetting clickAim;
+		 public static NumberSetting yawSpeed1;
+		 public static NumberSetting yawSpeed2;
+		 public static NumberSetting pitchSpeed1;
+		 public static NumberSetting pitchSpeed2;
+		 public static NumberSetting pitchOffset;
+		 public static BooleanSetting assistonTargetYaw;
+
 	public AimAssist()
 	{
 		super("Aim Assist", 0, Category.COMBAT);
@@ -47,18 +57,25 @@ public class AimAssist extends Module
 	public void init()
 	{
 		super.init();
+		 yawSpeed1 = new NumberSetting("YawSpeed1", 9.0D, 1.0D, 20.0D, 0.01D);
+   yawSpeed2 = new NumberSetting("YawSpeed2", 5.0D, 0.5D, 20D, 0.01D);
+   pitchSpeed1 = new NumberSetting("PitchSpeed1", 45.0D, 5.0D, 100.0D, 1.0D);
+   pitchSpeed2 = new NumberSetting("PitchSpeed2", 15.0D, 2.0D, 97.0D, 1.0D);
+     pitchOffset = new NumberSetting("pitchOffSet (blocks)", 4.0D, Integer.valueOf(-2), Integer.valueOf(2), 0.05D);
 		this.targetMonstersSetting =
 			new BooleanSetting("Target Monsters", true);
+			assistonTargetYaw = new BooleanSetting("Assist on Target Yaw", true);
 		this.targetAnimalsSetting = new BooleanSetting("Target Animals", false);
 		this.ignoreTeamsSetting = new BooleanSetting("Ignore Teams", true);
-		this.notHolding = new BooleanSetting("not Holding", false);
-		this.aimSpeedSetting = new NumberSetting("AimSpeed", 0.45, 0.1, 1.0, 0.1);
 		this.rangeSetting = new NumberSetting("Range", 5.0, 3.0, 8.0, 0.1);
 		this.fov = new NumberSetting("FOV", 90.0D, 15.0D, 360.0D, 1.0D);
 		sortmode = new ModeSetting("SortMode", "Angle", new String[]{"Angle","HurtTime","Distance", "Cycle"});
 		ignoreBreaking = new BooleanSetting("Ignore Breaking", true);
-		addSetting(notHolding, ignoreTeamsSetting, aimSpeedSetting,
-			rangeSetting, targetAnimalsSetting, targetMonstersSetting, fov, sortmode,ignoreBreaking);
+		randomYaw = new NumberSetting("Random Yaw", 0.0, 0.0, 10.0, 0.1);
+		setPitchSetting = new BooleanSetting("Set Pitch", false);
+		clickAim = new BooleanSetting("Click Aim", true);
+		addSetting(yawSpeed1,yawSpeed2, pitchSpeed1, pitchSpeed2, clickAim,pitchOffset,assistonTargetYaw, ignoreTeamsSetting,
+			rangeSetting, targetAnimalsSetting, targetMonstersSetting, fov, sortmode,ignoreBreaking, randomYaw,setPitchSetting);
 	}
 	
 	@Override
@@ -71,45 +88,76 @@ public class AimAssist extends Module
 	@Override
 	public void onEvent(Event<?> e)
 	{
-		if(e instanceof EventRender3D) {
-			float tickDelta = mc.getTickDelta() ;
+		if(e instanceof EventRenderGame) {
 			setTag(sortmode.getValue()+" " + "["+targets.size()+"]");
-			collectTargets();
+			targets = initTargets();
 			if (!targets.isEmpty()) {
 				target = targets.getFirst();
-				if (e.isPost() || target == null || !canAssist()) {
+				if (target == null || !canAssist()) {
 					return;
 				}
 				if (mc.player == null)
 					return;
-
-				float diff = calculateYawChangeToDst(target);
-				float aimSpeed = (float) aimSpeedSetting.value;
-				aimSpeed = (float) MathHelper.clamp(
-						RandomUtils.nextFloat(aimSpeed - 0.2f, aimSpeed + 1.8f),
-						aimSpeedSetting.minimum, aimSpeedSetting.maximum);
-				aimSpeed -= aimSpeed;
-
+				if(clickAim.isEnabled() && !mc.options.attackKey.isPressed()) {
+					return;
+				}
+ double diff = RotationUtils.getWrappedYawEntity(target);
+			//	float diff = calculateYawChangeToDst(target);
+				
+			//	float aimSpeed = RandomUtils.nextFloat((float) yawSpeed1.getValue(), (float) yawSpeed2.getValue());
+/* 
 				if (diff < -6) {
 					aimSpeed -= diff / 12f;
-					mc.player.setYaw(mc.player.getYaw(tickDelta) - aimSpeed);
+					float newYaw = mc.player.getYaw(tickDelta) - aimSpeed;
+			newYaw -= RandomUtils.nextFloat(-((float) randomYaw.value), ((float) randomYaw.value));
+					newYaw = angleStep(newYaw);
+					newYaw = MathHelper.wrapDegrees(newYaw);
+					newYaw = MathHelper.clamp(newYaw, -90f, 90f);
+					newYaw = RotationUtils.getFixedSensitivityAngle(mc.player.getYaw(), newYaw);
+					mc.player.setYaw(newYaw);
 				} else if (diff > 6) {
 					aimSpeed += diff / 12f;
-					mc.player.setYaw(mc.player.getYaw(tickDelta) + aimSpeed);
-
+					float newYaw = mc.player.getYaw() + aimSpeed;
+				    newYaw += RandomUtils.nextFloat(-((float) randomYaw.value), ((float) randomYaw.value));
+					newYaw = angleStep(newYaw);
+					newYaw = MathHelper.wrapDegrees(newYaw);
+					newYaw = MathHelper.clamp(newYaw, -90f, 90f);
+					newYaw = RotationUtils.getFixedSensitivityAngle(mc.player.getYaw(), newYaw);
+					mc.player.setYaw(newYaw);
 				}
+
+
+
+				 if (Math.abs(diff) > 1.0F) {
+					 float newYaw = mc.player.getYaw() + (diff > 0 ? aimSpeed : -aimSpeed);
+					 newYaw += RandomUtils.nextFloat(-((float) randomYaw.getValue()), ((float) randomYaw.getValue()));
+					 newYaw = angleStep(newYaw);
+					 newYaw = MathHelper.wrapDegrees(newYaw);
+					 newYaw = MathHelper.clamp(newYaw, -90f, 90f);
+					 newYaw = RotationUtils.getFixedSensitivityAngle(mc.player.getYaw(), newYaw);
+					 mc.player.setYaw(newYaw);
+				 }
+*/
+  if ((Math.abs(diff) > 1.0F  &&  assistonTargetYaw.isEnabled()) || Math.abs(diff) > 6.0F) {
+                        double fails = diff * (ThreadLocalRandom.current().nextDouble(yawSpeed2.getValue() - 1.47328D, yawSpeed2.getValue() + 2.48293D) / 100.0D);
+                       // double var10000 = fails + RandomUtils.random.current().nextDouble(yawSpeed1.getValue() - 4.723847D, yawSpeed1.getValue());
+                        float aimSpeed = (float)(-(fails + diff / (101.0D - (double)((float)ThreadLocalRandom.current().nextDouble(yawSpeed1.getValue() - 4.723847D,yawSpeed1.getValue())))));
+						float newYaw = mc.player.getYaw() + aimSpeed + RandomUtils.nextFloat(-((float) randomYaw.getValue()), ((float) randomYaw.getValue()));
+                        mc.player.setYaw(newYaw);
+                     }
+				if (setPitchSetting.isEnabled()) {
+				 double var10 = RotationUtils.getFixedRotationDifferencePitch(target, (float) pitchOffset.getValue()) * (ThreadLocalRandom.current().nextDouble(pitchSpeed2.getValue() - 1.47328D, pitchSpeed2.getValue() + 2.48293D) / 100.0D);
+                        float aimSpeed = (float)(-(var10 + diff / (101.0D - (double)((float)ThreadLocalRandom.current().nextDouble(pitchSpeed1.getValue() - 4.723847D, pitchSpeed1.getValue())))));
+                        float newPitch = mc.player.getPitch() + aimSpeed;
+					mc.player.setPitch(newPitch);
 			}
 		}
+	}
 	}
 	
 	private boolean canAssist()
 	{
 		if(mc.currentScreen != null)
-		{
-			return false;
-		}
-		
-		if(!notHolding.enabled && !mc.options.attackKey.isPressed())
 		{
 			return false;
 		}
@@ -121,15 +169,13 @@ public class AimAssist extends Module
 		{
 			return false;
 		}
-		
 		return true;
 	}
 	
-	private void collectTargets()
+	private List<LivingEntity> initTargets()
 	{
+		List<LivingEntity> targets = new ArrayList<>();
 		targets.clear();
-		
-		assert mc.world != null;
 		for(Entity entity : mc.world.getEntities())
 		{
 			if(entity instanceof Entity && entity != mc.player)
@@ -171,10 +217,10 @@ public class AimAssist extends Module
 
 		targets.sort(Comparator.comparingDouble(this::calculateYawChangeToDst));
 		targets.sort(Comparator.comparingInt(o -> o.hurtTime));
-
+		 return sortTargets(targets);
 	}
 
-	private void sortTargets() {
+	private List<LivingEntity> sortTargets(List<LivingEntity> targets) {
 		float yaw = Objects.requireNonNull(mc.player).getYaw();
 		String Sort = sortmode.getMode();
 		switch (Sort) {
@@ -195,6 +241,7 @@ public class AimAssist extends Module
 				targets.sort(Comparator.comparingInt(o -> o.hurtTime));
 				break;
 		}
+		return targets;
 	}
 
 	private double yawDistCycle(LivingEntity e, float yaw) {

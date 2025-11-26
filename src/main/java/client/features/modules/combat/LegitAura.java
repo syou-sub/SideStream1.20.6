@@ -1,15 +1,30 @@
 
 package client.features.modules.combat;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
 import client.Client;
 import client.event.Event;
-import client.event.listeners.*;
+import client.event.listeners.EventAttack;
+import client.event.listeners.EventInput;
+import client.event.listeners.EventMotion;
+import client.event.listeners.EventRender3D;
+import client.event.listeners.EventUpdate;
 import client.features.modules.Module;
 import client.settings.BooleanSetting;
 import client.settings.ModeSetting;
 import client.settings.MultiBooleanSetting;
 import client.settings.NumberSetting;
-import client.utils.*;
+import client.utils.PlayerHelper;
+import client.utils.RandomUtils;
+import client.utils.RenderingUtils;
+import client.utils.RotationUtils;
+import client.utils.ServerHelper;
+import client.utils.TimeHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -17,13 +32,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-
-import java.awt.*;
-import java.util.*;
 
 public class LegitAura extends Module
 {
@@ -31,7 +42,6 @@ public class LegitAura extends Module
     float[] angles = null;
     boolean isSilent  =false;
     boolean isInstant = false;
-    private double currentCPS;
    float[] serverSideAngles;
     NumberSetting rangeSetting;
     ModeSetting sortmode;;
@@ -39,6 +49,7 @@ public class LegitAura extends Module
     BooleanSetting hitThroughWalls;
     BooleanSetting clickOnly;
     public static ModeSetting rotationmode;
+    public static ModeSetting targetMode;
     NumberSetting maxCPS;
     NumberSetting minCPS;
     BooleanSetting moveFix;
@@ -56,9 +67,7 @@ public class LegitAura extends Module
     BooleanSetting legitMoveTurnFast;
     ModeSetting targetESPMode;
     BooleanSetting cooldownCheck;
-
-
-
+    NumberSetting switchDelay;
 
     public LegitAura()
     {
@@ -76,6 +85,8 @@ public class LegitAura extends Module
         rangeSetting = new NumberSetting("Range", 3.1, 3.0,4.2, 0.01);
         swingRange = new NumberSetting("Swing Range",4.2, 3.0, 6.0, 0.1);maxCPS = new NumberSetting("MaxCPS", 7, 2, 20, 1f);
         minCPS = new NumberSetting("MinCPS", 6, 1, 19, 1f);
+        targetMode = new ModeSetting("Target Mode", "Sort",
+                new String[]{"Sort", "Switch"," Tick"});
         sortmode = new ModeSetting("SortMode", "Angle", new String[]{"Angle","HurtTime","Distance", "Cycle"});
         rotationmode = new ModeSetting("Rotation Mode", "Normal",
                 new String[]{ "Normal", "Normal2", "Legit"});
@@ -96,32 +107,56 @@ public class LegitAura extends Module
 targetESP = new BooleanSetting("Target ESP", true);
 targetESPMode = new ModeSetting("Target ESP Mode", "NormalBox", "NormalBox","DebugBox");
 cooldownCheck = new BooleanSetting("Cooldown Check", false);
-        addSetting(angleStepSetting,rotationmode, maxCPS, minCPS
-                        ,targeting, sortmode,
+switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
+        addSetting(targetMode,angleStepSetting,rotationmode, maxCPS, minCPS
+                        ,targeting, sortmode,switchDelay,
               fov, hitThroughWalls, rangeSetting, clickOnly, moveFix, itemCheck, testMove,silent, legitAimSpeed,swingRange,smartSilent,legitMoveTurnFast,legitInstantSettings,legitfastmultipliter,targetESP,targetESPMode,cooldownCheck);
         super.init();
     }
-    public static ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
+    public static List<LivingEntity> targets = new ArrayList<LivingEntity>();
     private final TimeHelper attackTimer = new TimeHelper();
    public static LivingEntity target = null;
+   private final TimeHelper switchTimer = new TimeHelper();
 
     @Override
     public void onEvent(Event<?> e)
     {
 
         if(e instanceof EventUpdate) {
-            setTag(sortmode.getMode() + " " + "["+targets.size()+"]");
-            boolean legitInstant =  legitInstantSettings.getValues().get("Legit Instant");
+            String label = targetMode.getMode() + " " + sortmode.getValue() + "["+targets.size()+"]";
+            setTag(label);
+            boolean legitInstant = legitInstantSettings.getValues().get("Legit Instant");
             boolean smartLegitInstant = legitInstantSettings.getValues().get("Smart Legit Instant");
             if((Objects.requireNonNull(mc.player).isUsingItem()  && itemCheck.isEnabled()) || clickOnly.enabled && !mc.options.attackKey.isPressed()){
                 targets.clear();
                 target = null;
                 return;
             }
-            findTargets();
-            sortTargets();
+            targets = initTargets();
             if (!targets.isEmpty()) {
+                if(targetMode.getMode().equalsIgnoreCase("Switch")){
+                int index = 0;
+                if(switchTimer.hasReached(switchDelay.getValue() + RandomUtils.nextInt(0,10))){
+                 //   index = targets.indexOf(target) +1;
+                 index++;
+                    if( index < 0 || index >= targets.size()){
+                        index = 0;
+                    }
+                    switchTimer.reset();
+                } 
+                    target = targets.get(index);
+                } else if(targetMode.getMode().equalsIgnoreCase("Tick") ){
+                    int index = 0;
+                    if(target.hurtTime != 0){
+                        index++;
+                    if( index < 0 || index >= targets.size()) {
+                        index = 0;
+                    }
+                    target = targets.get(index);
+                    }
+                } else{
                 target = targets.getFirst();
+                }
                 if (smartSilent.getValue()) {
                     if (targets.size() >= 2) {
                         isSilent = true;
@@ -140,10 +175,8 @@ cooldownCheck = new BooleanSetting("Cooldown Check", false);
                 } else {
                     isInstant = legitInstant;
                 }
-
-
                 if (target != null) {
-                            attack(target);
+                  attack(target);
                     }
             } else {
                 target = null;
@@ -215,7 +248,7 @@ cooldownCheck = new BooleanSetting("Cooldown Check", false);
                     if (yawDiff < angleStep) {
                         tempAngles[0] = angles[0];
                     }
-                    fixed =rotationUtils.applySensitivityPatch(tempAngles, serverSideAngles );
+                    fixed = rotationUtils.applySensitivityPatch(tempAngles, serverSideAngles );
                 }
                 if (!isSilent && fixed != null) {
                     mc.player.setYaw(fixed[0]);
@@ -267,32 +300,63 @@ cooldownCheck = new BooleanSetting("Cooldown Check", false);
         return ((Math.abs(RotationUtils.getRotationsEntity((LivingEntity) e)[0] - yaw) % 360.0f > 180.0f) ? (360.0f - Math.abs(RotationUtils.getRotationsEntity((LivingEntity) e)[0] - yaw) % 360.0f) : (Math.abs(RotationUtils.getRotationsEntity((LivingEntity) e)[0] - yaw) % 360.0f));
     }
 
-    public void attack(Entity target)
+    public void attack(LivingEntity target)
     {
+        double currentCPS = 0;
         if (currentCPS == 0) {
             currentCPS = 1;
         }
-        if (attackTimer.hasReached(1000 / currentCPS) || (Objects.requireNonNull(mc.player).getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue()) ) {
-            currentCPS = RandomUtils.nextDouble(minCPS.getValue(),
-                    maxCPS.getValue());
-            if(target != null) {
-                if (fixed != null) {
-                    EntityHitResult hitResult = RaytraceUtils.rayCastByRotation(fixed[0], fixed[1], (float) rangeSetting.getValue());
-                    if (hitResult != null && hitResult.getEntity() != mc.player) {
+        if(targetMode.getValue().equalsIgnoreCase("Tick")) {
+          if(target.hurtTime == 0){
+ Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+                 Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
                         EventAttack eventAttack = new EventAttack(target);
                         Client.onEvent(eventAttack);
-                        Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
-                    }
-                }
-            }
-            Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+          }
+        }else {
+        if (attackTimer.hasReached(1000 / currentCPS) && !cooldownCheck.getValue()) {
+            currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
+                     attackTimer.reset();
+              //  if (fixed != null) {
+               //     EntityHitResult hitResult = RaytraceUtils.rayCastByRotation(fixed[0], fixed[1], (float) rangeSetting.getValue());
+                 //   if (hitResult != null && hitResult.getEntity() != mc.player) {
+                 Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+                 Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
+                        EventAttack eventAttack = new EventAttack(target);
+                        Client.onEvent(eventAttack);
+                        
+            //}
+            //}           
+        }
+        if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())){
+               Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+                 Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
+                        EventAttack eventAttack = new EventAttack(target);
+                        Client.onEvent(eventAttack);
+        }
+    }
+    }
+    public void swing()
+    {
+        double currentCPS = 0;
+        if (currentCPS == 0) {
+            currentCPS = 1;
+        }
+        if (attackTimer.hasReached(1000 / currentCPS) && !cooldownCheck.getValue()) {
+            currentCPS = RandomUtils.nextDouble(minCPS.getValue(),
+                    maxCPS.getValue());
+         Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
             attackTimer.reset();
+        }
+        if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())){
+             Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
         }
 
     }
 
-    private void findTargets()
+    public List<LivingEntity> initTargets()
     {
+        List<LivingEntity> targets = new ArrayList<>();
         targets.clear();
         for(Entity entity : Objects.requireNonNull(mc.world).getEntities())
         {
@@ -300,12 +364,12 @@ cooldownCheck = new BooleanSetting("Cooldown Check", false);
                 if(distanceTo(entity)<= rangeSetting.getValue()){
                     targets.add((LivingEntity) entity);
                 } else if (distanceTo(entity) <= swingRange.getValue()){
-                 attack(null);
+                 swing();
                 }
 
             }
         }
-
+        return sortTargets(targets);
     }
     public boolean isValid(Entity entity){
         boolean targetInvisibles =  targeting.getValues().get("Targeting Invisibles");
@@ -342,27 +406,28 @@ cooldownCheck = new BooleanSetting("Cooldown Check", false);
         return false;
     }
 
-    private void sortTargets() {
+    public List<LivingEntity> sortTargets(List<LivingEntity> tempList) {
         float yaw = Objects.requireNonNull(mc.player).getYaw();
         String Sort = sortmode.getMode();
         switch (Sort) {
             case "Distance":
-                targets.sort((o1, o2) -> {
+                tempList.sort((o1, o2) -> {
                     double dist1 = Objects.requireNonNull(mc.player).squaredDistanceTo((Entity) o1);
                     double dist2 = Objects.requireNonNull(mc.player).squaredDistanceTo((Entity) o2);
                     return Double.compare(dist1, dist2);
                 });
                 break;
             case "Angle":
-                targets.sort(Comparator.comparingDouble(RotationUtils::calculateYawChangeToDst));
+                tempList.sort(Comparator.comparingDouble(RotationUtils::calculateYawChangeToDst));
                 break;
             case "Cycle":
-                targets.sort(Comparator.comparingDouble(player -> yawDistCycle(player, yaw)));
+                tempList.sort(Comparator.comparingDouble(player -> yawDistCycle(player, yaw)));
                 break;
             case"HurtTime":
-                targets.sort(Comparator.comparingInt(o -> o.hurtTime));
+                tempList.sort(Comparator.comparingInt(o -> o.hurtTime));
                 break;
         }
+        return tempList;
     }
 
     private double yawDistCycle(LivingEntity e, float yaw) {
@@ -387,7 +452,7 @@ cooldownCheck = new BooleanSetting("Cooldown Check", false);
         target = null;
         super.onDisabled();
     }
-    public double distanceTo( Entity entity){
+    public double distanceTo(Entity entity){
         Vec3d eye = Objects.requireNonNull(mc.player).getEyePos();
         Box bb = entity.getBoundingBox();
        Vec3d  entityPosition  = new Vec3d(MathHelper.clamp(eye.x, bb.minX, bb.maxX),
