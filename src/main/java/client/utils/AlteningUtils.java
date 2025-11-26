@@ -20,9 +20,6 @@ public class AlteningUtils implements MCUtil{
     private static final YggdrasilAuthenticationService SERVICE = new YggdrasilAuthenticationService(Proxy.NO_PROXY, ENVIRONMENT);
     private @Nullable static WaybackAuthLib auth;
 
-
-
-
     public static void login(String s) {
         auth = getAuth(s);
 

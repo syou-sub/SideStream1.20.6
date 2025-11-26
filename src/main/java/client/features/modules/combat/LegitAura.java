@@ -68,12 +68,10 @@ public class LegitAura extends Module
     ModeSetting targetESPMode;
     BooleanSetting cooldownCheck;
     NumberSetting switchDelay;
-
     public LegitAura()
     {
         super("LegitAura", 0, Category.COMBAT);
     }
-
     @Override
     public void init()
     {
@@ -127,7 +125,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
             setTag(label);
             boolean legitInstant = legitInstantSettings.getValues().get("Legit Instant");
             boolean smartLegitInstant = legitInstantSettings.getValues().get("Smart Legit Instant");
-            if((Objects.requireNonNull(mc.player).isUsingItem()  && itemCheck.isEnabled()) || clickOnly.enabled && !mc.options.attackKey.isPressed()){
+            if((Objects.requireNonNull(mc.player).isUsingItem() && itemCheck.isEnabled()) || clickOnly.enabled && !mc.options.attackKey.isPressed()){
                 targets.clear();
                 target = null;
                 return;
@@ -145,9 +143,9 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                     switchTimer.reset();
                 } 
                     target = targets.get(index);
-                } else if(targetMode.getMode().equalsIgnoreCase("Tick") ){
+                } else if(targetMode.is("Tick") ){
                     int index = 0;
-                    if(target.hurtTime != 0){
+                    if(target.hurtTime > 0){
                         index++;
                     if( index < 0 || index >= targets.size()) {
                         index = 0;
@@ -184,8 +182,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         }
         if(e instanceof EventMotion)
         {
-            if(target != null)
-            {
+            if(target != null){
                 EventMotion event = (EventMotion)e;
                serverSideAngles =   ((EventMotion) e).getServerSideAngles();
                 if(fixed != null){
@@ -211,8 +208,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                 RotationUtils rotationUtils = new RotationUtils();
                 if(rotationmode.getMode().equalsIgnoreCase("Normal"))
                 {
-                    angles =
-                            RotationUtils.getRotationsEntity(target);
+                    angles = RotationUtils.getRotationsEntity(target);
 
                 } else
                 if(rotationmode.getMode().equalsIgnoreCase("Normal2"))
@@ -263,7 +259,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                 };
             }
         }
-        if( e instanceof EventRender3D){
+        if(e instanceof EventRender3D){
             MatrixStack matrixStack = ((EventRender3D) e).getMatrix();
             float partialTicks = ((EventRender3D) e).getPartialTicks();
             if(!targets.isEmpty() && target != null && targetESP.isEnabled()){
@@ -276,7 +272,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                         entity.prevY, entity.getY());
                 double interpolatedZ = MathHelper.lerp(partialTicks,
                         entity.prevZ, entity.getZ());
-
                 Box boundingBox = entity.getBoundingBox().offset(
                         interpolatedX - entity.getX(),
                         interpolatedY - entity.getY(),
@@ -286,14 +281,11 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                             matrixStack.peek().getPositionMatrix(),
                             boundingBox, color);
                 } else if (targetESPMode.is("DebugBox")) {
-                    RenderingUtils.draw3DDebugBox(matrixStack.peek().getPositionMatrix(),
-                            boundingBox, color);
-
+                    RenderingUtils.draw3DDebugBox(matrixStack.peek().getPositionMatrix(), boundingBox, color);
                 }
 
             }
         }
-
     }
 
     private float getFoVDistance(final float yaw, final Entity e) {
@@ -306,14 +298,14 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         if (currentCPS == 0) {
             currentCPS = 1;
         }
-        if(targetMode.getValue().equalsIgnoreCase("Tick")) {
-          if(target.hurtTime == 0){
- Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+        if(targetMode.is("Tick")) {
+          if (target.hurtTime == 0) {
+            Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
                  Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
                         EventAttack eventAttack = new EventAttack(target);
                         Client.onEvent(eventAttack);
           }
-        }else {
+        } else {
         if (attackTimer.hasReached(1000 / currentCPS) && !cooldownCheck.getValue()) {
             currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
                      attackTimer.reset();
@@ -324,7 +316,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                  Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
                         EventAttack eventAttack = new EventAttack(target);
                         Client.onEvent(eventAttack);
-                        
             //}
             //}           
         }
@@ -353,7 +344,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         }
 
     }
-
     public List<LivingEntity> initTargets()
     {
         List<LivingEntity> targets = new ArrayList<>();
@@ -390,7 +380,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
 
             if(entity instanceof PlayerEntity)
             {
-
                 if(ignoreTeams && ServerHelper.isTeammate((PlayerEntity)entity))
                 {
                     return false;
@@ -429,12 +418,10 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         }
         return tempList;
     }
-
     private double yawDistCycle(LivingEntity e, float yaw) {
         Vec3d difference = e.getPos().add(0.0D, (e.getEyeHeight(e.getPose()) / 2.0F), 0.0D).subtract(Objects.requireNonNull(mc.player).getEyePos());
         return Math.abs(yaw - Math.atan2(difference.getZ(), difference.getX())) % 90.0D;
     }
-
     @Override
     public void onEnabled()
     {
@@ -442,9 +429,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         target = null;
         super.onEnabled();
     }
-
-
-
     @Override
     public void onDisabled()
     {
