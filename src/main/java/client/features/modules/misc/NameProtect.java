@@ -22,6 +22,7 @@ public class NameProtect extends Module
 	@Override
 	public void onEvent(Event<?> e)
 	{
+		/* 
         if(e instanceof EventReceiveMessage){
             if(((EventReceiveMessage) e).getMessageString().contains(mc.player.getName().getLiteralString())){
                 String temp = ((EventReceiveMessage) e).getMessageString();
@@ -30,6 +31,7 @@ public class NameProtect extends Module
             }
         }
 		super.onEvent(e);
+		*/
 	}
 	
 }

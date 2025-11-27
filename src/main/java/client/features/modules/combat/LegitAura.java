@@ -334,8 +334,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
             currentCPS = 1;
         }
         if (attackTimer.hasReached(1000 / currentCPS) && !cooldownCheck.getValue()) {
-            currentCPS = RandomUtils.nextDouble(minCPS.getValue(),
-                    maxCPS.getValue());
+            currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
          Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
             attackTimer.reset();
         }
@@ -344,19 +343,17 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         }
 
     }
-    public List<LivingEntity> initTargets()
-    {
+    public List<LivingEntity> initTargets() {
         List<LivingEntity> targets = new ArrayList<>();
         targets.clear();
         for(Entity entity : Objects.requireNonNull(mc.world).getEntities())
         {
             if(isValid(entity)){
-                if(distanceTo(entity)<= rangeSetting.getValue()){
+                if(distanceTo(entity) <= rangeSetting.getValue()){
                     targets.add((LivingEntity) entity);
                 } else if (distanceTo(entity) <= swingRange.getValue()){
                  swing();
                 }
-
             }
         }
         return sortTargets(targets);

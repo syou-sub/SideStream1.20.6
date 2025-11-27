@@ -17,6 +17,7 @@
     "YggdrasilMinecraftSessionServiceAccessor"
   ],
   "client": [
+    "MixinTextVisitFactory",
     "InGameOverlayRendererMixin",
     "KeyboardInputMixin",
     "MixinBlock",

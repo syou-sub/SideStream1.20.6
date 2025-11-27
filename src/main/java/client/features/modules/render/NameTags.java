@@ -1,9 +1,7 @@
 package client.features.modules.render;
 
 import client.event.Event;
-import client.event.listeners.EventNameTag;
 import client.event.listeners.EventRender2D;
-import client.event.listeners.EventRender3D;
 import client.features.modules.Module;
 import client.settings.BooleanSetting;
 import client.settings.NumberSetting;
@@ -14,8 +12,6 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import me.x150.renderer.render.MSAAFramebuffer;
-import me.x150.renderer.render.Renderer2d;
-import me.x150.renderer.util.RendererUtils;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.Camera;
@@ -26,10 +22,8 @@ import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import client.utils.TickManager;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -45,9 +39,7 @@ public class NameTags extends Module
 	private final TTFFontRenderer font = TTFFontRenderer.of("ElliotSans", 8);
 	private final TTFFontRenderer nameDrawer = TTFFontRenderer.of("ElliotSans", 12);
 		public static NumberSetting size;
-
 		public BooleanSetting armor;
-	
 	public NameTags()
 	{
 		super("NameTags", 0, Category.RENDER);
@@ -55,7 +47,6 @@ public class NameTags extends Module
 		armor = new BooleanSetting("Armor", true);
 		addSetting(size,armor);
 	}
-
 	
 	public void onEvent(Event<?> event)
 	{
@@ -110,8 +101,7 @@ public class NameTags extends Module
 			MathHelper.lerp(p, b.y, a.y), MathHelper.lerp(p, b.z, a.z));
 	}
 	
-	public static Vec3d getScreenSpaceCoordinate(final Vec3d pos,
-		final MatrixStack stack)
+	public static Vec3d getScreenSpaceCoordinate(final Vec3d pos, final MatrixStack stack)
 	{
 		final Camera camera = mc.getEntityRenderDispatcher().camera;
 		if(camera == null)
@@ -130,19 +120,15 @@ public class NameTags extends Module
 				.mul(lastWorldSpaceMatrix);
 
         lastProjMat.mul(lastModMat).project(transformedCoordinates.x(),
-			transformedCoordinates.y(), transformedCoordinates.z(), viewport,
-			target);
-		
+			transformedCoordinates.y(), transformedCoordinates.z(), viewport, target);
 		return new Vec3d(target.x / mc.getWindow().getScaleFactor(),
 			(displayHeight - target.y) / mc.getWindow().getScaleFactor(),
 			target.z);
 	}
-	
 	public static boolean isOnScreen(final Vec3d pos)
 	{
 		return pos != null && pos.z > -1 && pos.z < 1;
 	}
-	
 	void drawInternal(final EventRender2D eve, final Vec3d screenPos,
 		final String text, final AbstractClientPlayerEntity entity) {
 
@@ -152,10 +138,10 @@ public class NameTags extends Module
 		if (ple != null) {
 			ping = ple.getLatency();
 		}
-
 		final String pingStr = (ping == 0 ? "?" : ping) + " ms";
 		final MatrixStack stack1 = eve.getContext().getMatrices();
 		stack1.push();
+		stack1.scale((float) (1.0 / NameTags.size.getValue()), (float) (1.0 / NameTags.size.getValue()), 1f);
 		final Vec3d actual =
 				new Vec3d(screenPos.x, screenPos.y - labelHeight, screenPos.z);
 		float width = nameDrawer.getStringWidth(text) + 4;
@@ -175,8 +161,7 @@ public class NameTags extends Module
 			for (final ItemStack stack : entity.getInventory().armor) {
 				if (stack.getItem() != Items.AIR) {
 					eve.getContext().drawItem(stack,
-							(int) (actual.x - width / 2d + 2
-									+ font.getStringWidth(pingStr) + xOffset),
+							(int) (actual.x - width / 2d + 2 + font.getStringWidth(pingStr) + xOffset),
 							(int) (actual.y - 10));
 				}
 				xOffset += 20;
@@ -185,14 +170,11 @@ public class NameTags extends Module
 			eve.getContext().drawItem(entity.getInventory().getMainHandStack(),
 					(int) (actual.x - width / 2d + 2 - 10), (int) (actual.y - 10));
 		}
-
 		stack1.pop();
 	}
 	/*
-
 	public void onNameTag(EventNameTag eventNameTag){
 		eventNameTag.cancel();
 	}
-
 	 */
 }

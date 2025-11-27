@@ -25,17 +25,14 @@ public class AnimationUtil
 			{
 				current = target;
 			}
-		}else if(diff < -speed)
-		{
-			double xD = (speed * delta / (1000 / 60) < 0.5 ? 0.5
-				: speed * delta / (1000 / 60));
+		} else if(diff < -speed) {
+			double xD = (speed * delta / (1000 / 60) < 0.5 ? 0.5 : speed * delta / (1000 / 60));
 			current += xD;
 			if(current > target)
 			{
 				current = target;
 			}
-		}else
-		{
+		} else {
 			current = target;
 		}
 		return current;
@@ -55,11 +52,9 @@ public class AnimationUtil
 		double factor = dif * speed;
 		if(factor < 0.1D)
 			factor = 0.1D;
-		if(larger)
-		{
+		if(larger) {
 			current += factor;
-		}else
-		{
+		} else {
 			current -= factor;
 		}
 		return current;
@@ -88,10 +83,8 @@ public class AnimationUtil
 		}
 		return current;
 	}
-	
-	public static double getAnimationState(double animation, double finalState,
-		double speed)
-	{
+
+	public static double getAnimationState(double animation, double finalState, double speed) {
 		float add = (float)(delta * speed);
 		if(animation < finalState)
 		{
@@ -99,7 +92,7 @@ public class AnimationUtil
 			{
 				animation += add;
 			}else
-			{
+{
 				animation = finalState;
 			}
 		}else if(animation - add > finalState)

@@ -47,6 +47,7 @@ public class AimAssist extends Module
 		 public static NumberSetting pitchSpeed2;
 		 public static NumberSetting pitchOffset;
 		 public static BooleanSetting assistonTargetYaw;
+		 public static BooleanSetting throughWalls;
 
 	public AimAssist()
 	{
@@ -64,6 +65,7 @@ public class AimAssist extends Module
      pitchOffset = new NumberSetting("pitchOffSet (blocks)", 4.0D, Integer.valueOf(-2), Integer.valueOf(2), 0.05D);
 		this.targetMonstersSetting =
 			new BooleanSetting("Target Monsters", true);
+			throughWalls = new BooleanSetting("Through Walls", false);
 			assistonTargetYaw = new BooleanSetting("Assist on Target Yaw", true);
 		this.targetAnimalsSetting = new BooleanSetting("Target Animals", false);
 		this.ignoreTeamsSetting = new BooleanSetting("Ignore Teams", true);
@@ -75,7 +77,7 @@ public class AimAssist extends Module
 		setPitchSetting = new BooleanSetting("Set Pitch", false);
 		clickAim = new BooleanSetting("Click Aim", true);
 		addSetting(yawSpeed1,yawSpeed2, pitchSpeed1, pitchSpeed2, clickAim,pitchOffset,assistonTargetYaw, ignoreTeamsSetting,
-			rangeSetting, targetAnimalsSetting, targetMonstersSetting, fov, sortmode,ignoreBreaking, randomYaw,setPitchSetting);
+			rangeSetting, targetAnimalsSetting, targetMonstersSetting, fov, sortmode,ignoreBreaking, randomYaw,setPitchSetting, throughWalls);
 	}
 	
 	@Override
@@ -101,7 +103,10 @@ public class AimAssist extends Module
 				if(clickAim.isEnabled() && !mc.options.attackKey.isPressed()) {
 					return;
 				}
- double diff = RotationUtils.getWrappedYawEntity(target);
+				if( !mc.player.canSee(target)  && !throughWalls.isEnabled()) {
+					return;
+				}
+                 double diff = RotationUtils.getWrappedYawEntity(target);
 			//	float diff = calculateYawChangeToDst(target);
 				
 			//	float aimSpeed = RandomUtils.nextFloat((float) yawSpeed1.getValue(), (float) yawSpeed2.getValue());
@@ -214,7 +219,6 @@ public class AimAssist extends Module
 				}
 			}
 		}
-
 		targets.sort(Comparator.comparingDouble(this::calculateYawChangeToDst));
 		targets.sort(Comparator.comparingInt(o -> o.hurtTime));
 		 return sortTargets(targets);

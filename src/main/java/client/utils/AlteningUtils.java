@@ -28,8 +28,8 @@ public class AlteningUtils implements MCUtil{
             auth.logIn();
             setSession(new Session(auth.getCurrentProfile().getName(), auth.getCurrentProfile().getId(), auth.getAccessToken(), Optional.empty(), Optional.empty(), Session.AccountType.MOJANG));
         } catch (Exception ignored) {
-        }
     }
+ }
     private static WaybackAuthLib getAuth(String s) {
         WaybackAuthLib auth = new WaybackAuthLib(ENVIRONMENT.servicesHost());
         auth.setUsername(s);
@@ -39,7 +39,6 @@ public class AlteningUtils implements MCUtil{
     public static void setSession(Session session) {
         Client.IMC.setSession(session);
     }
-
     public static void applyLoginEnvironment(YggdrasilAuthenticationService authService, MinecraftSessionService sessService) {
         MinecraftClientAccessor mca = (MinecraftClientAccessor) mc;
         mca.setAuthenticationService(authService);
