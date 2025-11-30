@@ -120,7 +120,7 @@ Client.IMC.setSession(session);
         // テキストとして取り出す
         if (text != null && text.contains("@alt.com")) {
             AlteningUtils.login(text);
-            Client.altManager.alts.add(new Alt(text, "a"));
+            Client.altManager.alts.add(new Alt(text, ""));
             this.refresh();
                 return text;
         }
@@ -141,7 +141,7 @@ Client.IMC.setSession(session);
         Logger.logConsole(token);
         if (token != null && token.contains("@alt.com")) {
             AlteningUtils.login(token);
-            Client.altManager.alts.add(new Alt(token, "a"));
+            Client.altManager.alts.add(new Alt(token, ""));
             this.refresh();
             return token;
         }
