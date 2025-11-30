@@ -1,13 +1,9 @@
 package client.utils;
 
-import client.Client;
-import client.features.modules.movement.DebugSpeed;
 import client.mixin.client.MinecraftClientAccessor;
 import client.mixin.client.RenderTickCounterAccessor;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.message.SentMessage;
-
 public class MCTimerUtil
 {
 

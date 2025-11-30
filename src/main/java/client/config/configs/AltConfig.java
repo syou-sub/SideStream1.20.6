@@ -1,4 +1,3 @@
-/*    */
 package client.config.configs;
 
 /*    */
@@ -104,7 +103,7 @@ package client.config.configs;
 				/* 76 */ Alt alt = var3.next();
 				/* 77 */ if(alt.getMask().equals(""))
 				{
-					/* 78 */ String str = String.valueOf(alt.getUsername())
+			 String str = String.valueOf(alt.getUsername())
 						+ ":" + alt.getPassword();
 					/* 79 */ var4.println(str);
 					continue;

@@ -43,6 +43,7 @@ public class LegitAura extends Module
     boolean isSilent  =false;
     boolean isInstant = false;
    float[] serverSideAngles;
+   public boolean swinging = false;
    double currentCPS = 0;
     NumberSetting rangeSetting;
     ModeSetting sortmode;;
@@ -311,7 +312,9 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
               //  if (fixed != null) {
                //     EntityHitResult hitResult = RaytraceUtils.rayCastByRotation(fixed[0], fixed[1], (float) rangeSetting.getValue());
                  //   if (hitResult != null && hitResult.getEntity() != mc.player) {
+                 if(!swinging){}
                  Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+        }
                  Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
                         EventAttack eventAttack = new EventAttack(target);
                         Client.onEvent(eventAttack);
@@ -319,7 +322,9 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
             //}           
         }
         if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())){
+            if(!swinging) {
                Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+        }
                  Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
                         EventAttack eventAttack = new EventAttack(target);
                         Client.onEvent(eventAttack);
@@ -331,6 +336,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         if(targetMode.is("Tick")) {
             return;
         }
+        swinging = true;
         if (currentCPS == 0) {
             currentCPS = 1;
         }
