@@ -43,6 +43,7 @@ public class LegitAura extends Module
     boolean isSilent  =false;
     boolean isInstant = false;
    float[] serverSideAngles;
+   double currentCPS = 0;
     NumberSetting rangeSetting;
     ModeSetting sortmode;;
     NumberSetting fov;
@@ -184,7 +185,9 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         {
             if(target != null){
                 EventMotion event = (EventMotion)e;
-               serverSideAngles =   ((EventMotion) e).getServerSideAngles();
+               serverSideAngles = new float[]{
+                        event.getYaw(), event.getPitch()
+                };
                 if(fixed != null){
                     if(isSilent) {
                         event.setYaw(fixed[0]);
@@ -205,7 +208,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         }
         if(e instanceof EventRender3D){
             if( target != null) {
-                RotationUtils rotationUtils = new RotationUtils();
                 if(rotationmode.getMode().equalsIgnoreCase("Normal"))
                 {
                     angles = RotationUtils.getRotationsEntity(target);
@@ -216,8 +218,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                     angles = RotationUtils.getRotationsRandom((LivingEntity)target);
 
                 } else
-                if(rotationmode.getMode().equalsIgnoreCase("Legit"))
-                {
+                if(rotationmode.getMode().equalsIgnoreCase("Legit")) {
                     boolean shouldTurnFast = legitMoveTurnFast.getValue() && PlayerHelper.isMoving();
                     float[] currentAngles;
                     if(isSilent){
@@ -228,10 +229,10 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                     float aimSpeed = (float) legitAimSpeed.getValue();
                      aimSpeed = (float)
                             RandomUtils.nextFloat(aimSpeed - 0.02f, aimSpeed + 0.02f)*0.1f;
-                       angles = rotationUtils.calcRotation(legitMoveTurnFast.getValue(),target, aimSpeed, (float) rangeSetting.getValue(), isInstant,  currentAngles, (float) legitfastmultipliter.getValue());
+                       angles = RotationUtils.calcRotation(legitMoveTurnFast.getValue(),target, aimSpeed, (float) rangeSetting.getValue(), isInstant,  currentAngles, (float) legitfastmultipliter.getValue());
                      //   angles = RotationUtils.getLimitedAngles(serverSideAngles,tempAngles,target);
                 }
-                if(angles != null){
+                if(angles != null) {
                     float angleStep = ((float) angleStepSetting.getValue());
                    // fixed = rotationUtils.fixedSensitivity(angles, 0.1F);
                     float[] tempAngles = new float[]{angles[0], angles[1]};
@@ -244,19 +245,17 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                     if (yawDiff < angleStep) {
                         tempAngles[0] = angles[0];
                     }
-                    fixed = rotationUtils.applySensitivityPatch(tempAngles, serverSideAngles );
+                    fixed = RotationUtils.applySensitivityPatch(tempAngles, serverSideAngles);
                 }
                 if (!isSilent && fixed != null) {
                     mc.player.setYaw(fixed[0]);
                     mc.player.setPitch(fixed[1]);
                 }
             } else {
-                serverSideAngles= new float[]{
+                serverSideAngles = new float[]{
                         mc.player.getYaw(), mc.player.getPitch()
                 };
-                angles = new float[]{
-                        mc.player.getYaw(), mc.player.getPitch()
-                };
+                angles = new float[]{  mc.player.getYaw(), mc.player.getPitch()};
             }
         }
         if(e instanceof EventRender3D){
@@ -294,10 +293,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
 
     public void attack(LivingEntity target)
     {
-        double currentCPS = 0;
-        if (currentCPS == 0) {
-            currentCPS = 1;
-        }
+    
         if(targetMode.is("Tick")) {
           if (target.hurtTime == 0) {
             Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
@@ -306,7 +302,10 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                         Client.onEvent(eventAttack);
           }
         } else {
-        if (attackTimer.hasReached(1000 / currentCPS) && !cooldownCheck.getValue()) {
+        if (currentCPS == 0) {
+            currentCPS = 1;
+        }
+        if (attackTimer.hasReached(1000 / currentCPS)) {
             currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
                      attackTimer.reset();
               //  if (fixed != null) {
@@ -329,11 +328,13 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
     }
     public void swing()
     {
-        double currentCPS = 0;
+        if(targetMode.is("Tick")) {
+            return;
+        }
         if (currentCPS == 0) {
             currentCPS = 1;
         }
-        if (attackTimer.hasReached(1000 / currentCPS) && !cooldownCheck.getValue()) {
+        if (attackTimer.hasReached(1000 / currentCPS)) {
             currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
          Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
             attackTimer.reset();
@@ -391,7 +392,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         }
         return false;
     }
-
     public List<LivingEntity> sortTargets(List<LivingEntity> tempList) {
         float yaw = Objects.requireNonNull(mc.player).getYaw();
         String Sort = sortmode.getMode();
@@ -417,7 +417,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
     }
     private double yawDistCycle(LivingEntity e, float yaw) {
         Vec3d difference = e.getPos().add(0.0D, (e.getEyeHeight(e.getPose()) / 2.0F), 0.0D).subtract(Objects.requireNonNull(mc.player).getEyePos());
-        return Math.abs(yaw - Math.atan2(difference.getZ(), difference.getX())) % 90.0D;
+        return Math.abs(yaw - Math.atan2(difference.getZ(), difference.getX()) * RotationUtils.RAD_TO_DEG) % 90.0D;
     }
     @Override
     public void onEnabled()

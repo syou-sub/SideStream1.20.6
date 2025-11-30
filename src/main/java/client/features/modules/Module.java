@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Module
 {
@@ -33,12 +34,12 @@ public class Module
 	public String name;
 	@Setter
 	public String displayName;
-	public boolean enable;
+	public boolean enabled;
 	
 	public int priority;
 	
 	@Getter
-	public List<Setting> settings = new ArrayList<Setting>();
+	public List<Setting> settings = new CopyOnWriteArrayList();
 	
 	public Module(String name, Category category)
 	{
@@ -64,10 +65,10 @@ public class Module
 		init();
 	}
 	
-	public Module(String name, int keyCode, Category category, boolean enable)
+	public Module(String name, int keyCode, Category category, boolean enabled)
 	{
 		this(name, keyCode, category);
-		this.enable = enable;
+		this.enabled = enabled;
 	}
 	
 	public Module(String name, int keyCode, Category category, int priority)
@@ -93,12 +94,12 @@ public class Module
 	
 	public boolean isEnabled()
 	{
-		return enable;
+		return enabled;
 	}
 	
 	public void setEnabled(boolean enable)
 	{
-		this.enable = enable;
+		this.enabled = enable;
 	}
 	
 	public String getDisplayName()
@@ -113,8 +114,8 @@ public class Module
 	
 	public void toggle()
 	{
-		enable = !enable;
-		if(enable)
+		enabled = !enabled;
+		if(enabled)
 		{
 			onEnabled();
 		}else

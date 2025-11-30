@@ -208,7 +208,7 @@ public final class RotationUtils implements MCUtil{
 				entity.getZ());
 	}
 
-	private double limitAngleChange(double current, double intended, double speed) {
+	private static double limitAngleChange(double current, double intended, double speed) {
 		double change = intended - current;
 		if (change > speed) {
 			change = speed;
@@ -239,10 +239,8 @@ public final class RotationUtils implements MCUtil{
 		double yaw = Math.atan2(x, z) * 57.2957795D;
 		return (float)(yaw * -1.0D);
 	}
-
-
 	
-	public float[] fixedSensitivity(float[] rotations, float sens)
+	public static float[] fixedSensitivity(float[] rotations, float sens)
 	{
 		float f = sens * 0.6F + 0.2F;
 		float gcd = f * f * f * 1.2F;
@@ -250,7 +248,7 @@ public final class RotationUtils implements MCUtil{
 			(rotations[1] - rotations[1] % gcd)};
 	}
 
-	public float[] applySensitivityPatch(final float[] targetRotation, float[] previousRotation) {
+	public static float[] applySensitivityPatch(final float[] targetRotation, float[] previousRotation) {
 		final float mouseSensitivity = (float) (mc.options.getMouseSensitivity().getValue() * (1 + Math.random() / 10000000) * 0.6F + 0.2F);
 		final double multiplier = mouseSensitivity * mouseSensitivity * mouseSensitivity * 8.0F * 0.15D;
 		final float yaw = previousRotation[0] + (float) (Math.round((targetRotation[0] - previousRotation[0]) / multiplier) * multiplier);
@@ -265,7 +263,7 @@ public final class RotationUtils implements MCUtil{
 			MathHelper.clamp(vec.z, box.minZ, box.maxZ));
 	}
 
-	public  float[] calcRotation(boolean legitTurnFast,Entity entity ,float aimSpeed, float range, boolean instant,float[]serverSideAngles, float fastmultipliter) {
+	public static float[] calcRotation(boolean legitTurnFast,Entity entity ,float aimSpeed, float range, boolean instant,float[]serverSideAngles, float fastmultipliter) {
 		if (serverSideAngles == null) {
 			serverSideAngles = new float[]{
 					mc.player.getYaw(), mc.player.getPitch()
@@ -309,7 +307,7 @@ public final class RotationUtils implements MCUtil{
 
 
 
-	private float[] computeTurnSpeed(float diffH, float diffV, float speed) {
+	private static float[] computeTurnSpeed(float diffH, float diffV, float speed) {
 		diffH = Math.max(diffH, 1);
 		diffV = Math.max(diffV, 1);
 
@@ -326,7 +324,7 @@ public final class RotationUtils implements MCUtil{
 				Math.min(Math.max(Math.abs(turnSpeedV), minSpeed), maxSpeed)
 		};
 	}
-	private float[] computeTurnSpeedDynamic(float diffH, float diffV, float speed) {
+	private static float[] computeTurnSpeedDynamic(float diffH, float diffV, float speed) {
 		diffH = Math.max(diffH, 1);
 		diffV = Math.max(diffV, 1);
 
@@ -349,7 +347,7 @@ public final class RotationUtils implements MCUtil{
 				Math.min(Math.max(turnSpeedV, minSpeed), maxSpeed)
 		};
 	}
-	public float[] calcRotation(Entity entity) {
+	public static float[] calcRotation(Entity entity) {
 		float aYaw = 0, aPitch = 0;
 		long next = 0;
 		Vec3d eye = Objects.requireNonNull(mc.player).getEyePos();
@@ -377,7 +375,7 @@ public final class RotationUtils implements MCUtil{
 				RandomUtils.nextDouble(-0.1f, 0.1)
 		), eye);
 	}
-	public  float[] wrapAngleArray(float playerYaw , float playerPitch, float[] targetAngle){
+	public static float[] wrapAngleArray(float playerYaw , float playerPitch, float[] targetAngle){
 		float yaw = targetAngle[0];
 		float pitch = targetAngle[1];
 		final float finishedYaw =
@@ -388,11 +386,11 @@ public final class RotationUtils implements MCUtil{
 				finishedYaw,finishedPitch
 		};
 	}
-	private float lerp(float a, float b, float t) {
+	private static float lerp(float a, float b, float t) {
 
 		return a + (b - a) * t;
 	}
-	private float[] lerpArray (float[]from, float[] target, float vSpeed, float hSpeed){
+	private static float[] lerpArray (float[]from, float[] target, float vSpeed, float hSpeed){
 		return new float[] {
 				lerp(from[0],target[0],vSpeed), lerp(from[1],target[1],hSpeed)
 		};

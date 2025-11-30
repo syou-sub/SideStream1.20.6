@@ -40,35 +40,40 @@ public class Client
 	public static void init()
 	{
 		System.out.println("Starting " + NAME + " Build " + VERSION);
-		commandManager = new CommandManager();
-		moduleManager = new ModuleManager();
-		BackgroundManager.loadBackgroundImage();
-		makeClientDirectory();
-		altManager = new AltManager();
-		configManager = new ConfigManager();
-		skywarsKillEffect = new SkywarsKillEffect();
-		Config.loadConfig();
+	initManagers();
+		initFiles();
+		System.out.println(NAME + " started successfully!");
 	}
 	
 	public static Event<?> onEvent(Event<?> e)
 	{
-		if( e instanceof EventMotion){
+		if(e instanceof EventMotion) {
 			RotationUtils.virtualYaw = ((EventMotion) e).getServerSideAngles()[0];
 			RotationUtils.virtualPitch = ((EventMotion) e).getServerSideAngles()[1];
 		}
 		moduleManager.onEvent(e);
 		return e;
 	}
+	public static void initManagers()
+	{
+	commandManager = new CommandManager();
+		moduleManager = new ModuleManager();
+	}	
 	
 	public static void shutdown()
 	{}
 	
-	public static void makeClientDirectory()
+	public static void initFiles()
 	{
 		if(!FOLDER.exists())
 		{
 			FOLDER.mkdir();
 		}
+		BackgroundManager.loadBackgroundImage();
+			altManager = new AltManager();
+		configManager = new ConfigManager();
+		skywarsKillEffect = new SkywarsKillEffect();
+		Config.loadConfig();
 	}
 
 }

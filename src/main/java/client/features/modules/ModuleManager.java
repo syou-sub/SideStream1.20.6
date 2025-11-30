@@ -13,16 +13,13 @@ import client.utils.MCUtil;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ModuleManager implements MCUtil
 {
-	public static CopyOnWriteArrayList<Module> modules =
-		new CopyOnWriteArrayList<Module>();
 	
-	public ModuleManager()
-	{
+	public static List<Module> modules = new CopyOnWriteArrayList<>();
+	
+	public ModuleManager() {
 		modules.add(new LegitAura());
 		modules.add(new ClickGUI());
 		modules.add(new Fullbright());
@@ -76,6 +73,10 @@ public class ModuleManager implements MCUtil
         modules.add(new AntiImmobilizer());
         modules.add(new Step());
 	}
+	public static void addModule(Module m)
+	{
+		modules.add(m);
+	}
 	
 	public static class ModuleComparator implements Comparator<Module>
 	{
@@ -85,7 +86,7 @@ public class ModuleManager implements MCUtil
 			return Integer.compare(o2.priority, o1.priority);
 		}
 	}
-	public @Nullable Module getModuleIgnoreCase(String moduleName) {
+	public Module getModuleIgnoreCase(String moduleName) {
 		return (Module)modules.stream().filter((m) -> {
 			return m.getName().equalsIgnoreCase(moduleName);
 		}).findFirst().orElse((Module) null);
@@ -113,19 +114,22 @@ public class ModuleManager implements MCUtil
 				m.onEvent(e);
 		});
 	}
+
 	
 	public static List<Module> getModulesbyCategory(Module.Category c)
 	{
 		return modules.stream().filter(m -> m.category == c).toList();
 	}
 	
-	public static Module getModulebyClass(Class<? extends Module> c)
-	{
-		return modules.stream().filter(m -> m.getClass() == c).findFirst()
-			.orElse(null);
-	}
+	public static Module getModulebyClass(Class<? extends Module> clazz) {
+    for (Module m : modules) {
+        if (m.getClass() == clazz)
+            return m;
+    }
+    return null;
+}
 	
-	public static Module getModulebyName(@NotNull String str)
+	public static Module getModulebyName(String str)
 	{
 		return modules.stream().filter(m -> m.getName().equals(str)).findFirst()
 			.orElse(null);
@@ -142,7 +146,7 @@ public class ModuleManager implements MCUtil
 			.ifPresent(Module::toggle);
 	}
 	
-	public CopyOnWriteArrayList<Module> getModules()
+	public List<Module> getModules()
 	{
 		return modules;
 	}
@@ -152,7 +156,7 @@ public class ModuleManager implements MCUtil
 		if(module.settings.size() > index)
 		{
 			return module.settings.get(index);
-		}else
+		} else
 		{
 			return module.settings.getFirst();
 		}

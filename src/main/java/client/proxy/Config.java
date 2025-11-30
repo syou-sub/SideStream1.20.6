@@ -26,13 +26,10 @@ public class Config {
                 }
                 return;
             }
-
             String configString = FileUtils.readFileToString(configFile, "UTF-8");
-
             if (!configString.isEmpty()) {
                 JsonObject configJson = JsonParser.parseString(configString).getAsJsonObject();
                 ProxyServer.proxyEnabled = configJson.get("proxy-enabled").getAsBoolean();
-
                 Type type = new TypeToken<HashMap<String, Proxy>>() {
                 }.getType();
                 accounts = new Gson().fromJson(configJson.get("accounts"), type);

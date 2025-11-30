@@ -9,11 +9,14 @@ package client.ui.gui.altmanager.screens;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import client.Client;
 import client.alts.Alt;
 import client.alts.AltManager;
 import client.utils.ListWidget;
+import client.utils.UUIDUtils;
+
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -34,6 +37,8 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.session.Session;
+import net.minecraft.client.session.Session.AccountType;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -161,7 +166,9 @@ public final class AltManagerScreen extends Screen
 	}
 	
 	private void pressDelete()
-	{
+	{		
+		    
+
 		Alt alt = listGui.getSelectedAlt();
 		if(alt == null)
 			return;

@@ -27,7 +27,7 @@ public class MixinIngameHud
 	private void renderHotbar(DrawContext context, float tickDelta,
 		CallbackInfo ci)
 	{
-		if(ModuleManager.getModulebyClass(HUD.class).enable)
+		if(ModuleManager.getModulebyClass(HUD.class).enabled)
 			Client.hud2.draw(context);
 	}
 	

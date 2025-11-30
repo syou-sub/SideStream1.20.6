@@ -51,6 +51,7 @@ public class MixinClientPlayerEntity
 				instance.getYaw(), instance.getPitch(), instance.isOnGround());
 		Client.onEvent(event);
 		RotationUtils.virtualYaw = event.getYaw();
+		RotationUtils.virtualPitch = event.getPitch();
 		return event.getYaw();
 	}
 @ModifyArgs(

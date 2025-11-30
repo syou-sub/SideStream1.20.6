@@ -260,8 +260,7 @@ public class AimAssist extends Module
 		double deg = Math.toDegrees(Math.atan(diffZ / diffX));
 		if(diffZ < 0.0 && diffX < 0.0)
 		{
-			return (float)MathHelper
-				.wrapDegrees(-(mc.player.getYaw() - (90 + deg)));
+			return (float)MathHelper.wrapDegrees(-(mc.player.getYaw() - (90 + deg)));
 		}else if(diffZ < 0.0 && diffX > 0.0)
 		{
 			return (float)MathHelper

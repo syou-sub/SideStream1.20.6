@@ -21,7 +21,6 @@ public class ClientConnectionInit {
 
         if (ProxyServer.proxyEnabled) {
             ProxyServer.lastUsedProxy = proxy;
-
             if (proxy.type == Proxy.ProxyType.SOCKS5) {
                 channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.getIp(), proxy.getPort()), proxy.username.isEmpty() ? null : proxy.username, proxy.password.isEmpty() ? null : proxy.password));
             } else {

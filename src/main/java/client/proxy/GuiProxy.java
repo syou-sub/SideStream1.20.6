@@ -27,8 +27,6 @@ public class GuiProxy extends Screen {
     private int[] positionY;
     private int positionX;
 
-
-
     private static String text_proxy = "Proxy";
 
 
@@ -42,7 +40,7 @@ public class GuiProxy extends Screen {
         if (split.length > 1) {
             if (!StringUtils.isNumeric(split[1])) return false;
             int port = Integer.parseInt(split[1]);
-            if (port < 0 || port > 0xFFFF) return false;
+            if (port < 0) return false;
             return true;
         } else {
             return false;
@@ -70,9 +68,7 @@ public class GuiProxy extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        super.keyPressed(keyCode, scanCode, modifiers);
-        msg = "";
-        return true;
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -104,7 +100,7 @@ public class GuiProxy extends Screen {
     @Override
     public void init() {
 //        MinecraftClient.getInstance().keyboard.setRepeatEvents(true);
-        int buttonLength = 160;
+        int buttonLength = 300;
         centerButtons(10, buttonLength, 26);
 
         isSocks4 = ProxyServer.proxy.type == Proxy.ProxyType.SOCKS4;
@@ -117,7 +113,7 @@ public class GuiProxy extends Screen {
 
         this.ipPort = new TextFieldWidget(this.textRenderer, positionX, positionY[2], buttonLength, 20, Text.literal(""));
         this.ipPort.setText(ProxyServer.proxy.ipPort);
-        this.ipPort.setMaxLength(1024);
+        this.ipPort.setMaxLength(2048);
         this.ipPort.setFocused(true);
         this.addSelectableChild(this.ipPort);
 

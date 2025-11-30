@@ -1,5 +1,6 @@
 package client.mixin.client;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.TextVisitFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,10 +20,11 @@ public class MixinTextVisitFactory {
             index = 0)
     private static String adjustText(String text) {
     if(ModuleManager.getModulebyClass(NameProtect.class).isEnabled()) {
-        return text.replaceAll(
-                String.valueOf(net.minecraft.client.MinecraftClient.getInstance().player.getName().getLiteralString()),
-                "\247d" + Client.NAME + "User" + "\247r");
+        if(MinecraftClient.getInstance().player == null) {
+            return text;
+        }
+        return text.replaceAll( String.valueOf(net.minecraft.client.MinecraftClient.getInstance().player.getName().getLiteralString()),"\247d" + Client.NAME + "User" + "\247r");
     }
     else return text;
-}
+      }
 }

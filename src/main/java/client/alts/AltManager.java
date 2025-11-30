@@ -19,6 +19,11 @@ public class AltManager
 		alt.login();
 		
 	}
+	public void add(Alt alt)
+	{
+		alts.add(alt);
+	
+	}
 	
 	public void remove(int index)
 	{

@@ -5,12 +5,16 @@ import client.alts.Alt;
 import client.ui.gui.altmanager.screens.AltManagerScreen;
 import client.utils.AlteningUtils;
 import client.utils.Logger;
+import client.utils.UUIDUtils;
+
 import com.google.gson.Gson;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.session.Session;
+import net.minecraft.client.session.Session.AccountType;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,6 +33,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Objects;
+import java.util.UUID;
 
 @Mixin(MultiplayerScreen.class)
 public abstract class MixinMultiplayerScreen extends Screen
@@ -86,14 +91,23 @@ public abstract class MixinMultiplayerScreen extends Screen
                         })
                 .dimensions(300, 4, 150, 20).build());
         addDrawableChild(theAlteningCopyButton = ButtonWidget
-                .builder(Text.literal("Copy TheAltening Current Token"),
+                .builder(Text.literal("Clipboard Session Login"),
                         b -> {
-                    if(token != null) {
+                        /* 
                         String text = token;
                         StringSelection selection = new StringSelection(text);
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                         clipboard.setContents(selection, null);
-                    }
+                        */
+     String a = MinecraftClient.getInstance().keyboard.getClipboard();
+     if(a == null || !a.contains("|"))
+         return;
+String username = a.split("\\|")[0];
+    UUID uuid = UUIDUtils.uuidFromString(a.split("\\|")[1]);
+		String accessToken = a.split("\\|")[2];	
+	Session session = new Session(username, uuid, accessToken, null, null, AccountType.MSA);
+Client.IMC.setSession(session);
+                    
                         })
                 .dimensions(500, 4, 200, 20).build());
 	}
@@ -104,9 +118,9 @@ public abstract class MixinMultiplayerScreen extends Screen
       //  Transferable t = clipboard.getContents(null);
         String text = MinecraftClient.getInstance().keyboard.getClipboard();
         // テキストとして取り出す
-        if (text !=null && text.contains("@alt.com")) {
+        if (text != null && text.contains("@alt.com")) {
             AlteningUtils.login(text);
-            Client.altManager.alts.add(new Alt(text, ""));
+            Client.altManager.alts.add(new Alt(text, "a"));
             this.refresh();
                 return text;
         }
@@ -127,7 +141,7 @@ public abstract class MixinMultiplayerScreen extends Screen
         Logger.logConsole(token);
         if (token != null && token.contains("@alt.com")) {
             AlteningUtils.login(token);
-            Client.altManager.alts.add(new Alt(token, ""));
+            Client.altManager.alts.add(new Alt(token, "a"));
             this.refresh();
             return token;
         }
