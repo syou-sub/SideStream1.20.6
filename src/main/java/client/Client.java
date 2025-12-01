@@ -9,7 +9,7 @@ import client.features.modules.ModuleManager;
 import client.mixin.mixininterface.IMinecraftClient;
 import client.proxy.Config;
 import client.ui.BackgroundManager;
-import client.ui.HUD2;
+import client.ui.HUDRenderer;
 import client.utils.MCTimerUtil;
 import client.utils.RotationUtils;
 import com.morekilleffects.SkywarsKillEffect;
@@ -22,7 +22,7 @@ public class Client
 {
 	public static final String NAME = "SideStream";
 	public static final String VERSION = "20251120";
-	public static HUD2 hud2 = new HUD2();
+	public static HUDRenderer hud2 = new HUDRenderer();
 	public static String bgLocation = "client/bg.png";
 	public static AltManager altManager;
 	@Getter

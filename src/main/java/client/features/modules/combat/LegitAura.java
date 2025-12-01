@@ -70,6 +70,7 @@ public class LegitAura extends Module
     ModeSetting targetESPMode;
     BooleanSetting cooldownCheck;
     NumberSetting switchDelay;
+    public double swingCps = 0;
     public LegitAura()
     {
         super("LegitAura", 0, Category.COMBAT);
@@ -154,7 +155,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                     }
                     target = targets.get(index);
                     }
-                } else{
+                } else {
                 target = targets.getFirst();
                 }
                 if (smartSilent.getValue()) {
@@ -232,7 +233,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                             RandomUtils.nextFloat(aimSpeed - 0.02f, aimSpeed + 0.02f)*0.1f;
                        angles = RotationUtils.calcRotation(legitMoveTurnFast.getValue(),target, aimSpeed, (float) rangeSetting.getValue(), isInstant,  currentAngles, (float) legitfastmultipliter.getValue());
                      //   angles = RotationUtils.getLimitedAngles(serverSideAngles,tempAngles,target);
-                }
+                    }
                 if(angles != null) {
                     float angleStep = ((float) angleStepSetting.getValue());
                    // fixed = rotationUtils.fixedSensitivity(angles, 0.1F);
@@ -253,13 +254,11 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                     mc.player.setPitch(fixed[1]);
                 }
             } else {
-                serverSideAngles = new float[]{
-                        mc.player.getYaw(), mc.player.getPitch()
-                };
-                angles = new float[]{  mc.player.getYaw(), mc.player.getPitch()};
+                serverSideAngles = new float[]{mc.player.getYaw(), mc.player.getPitch()};
+                angles = new float[]{ mc.player.getYaw(), mc.player.getPitch()};
             }
         }
-        if(e instanceof EventRender3D){
+        if(e instanceof EventRender3D) {
             MatrixStack matrixStack = ((EventRender3D) e).getMatrix();
             float partialTicks = ((EventRender3D) e).getPartialTicks();
             if(!targets.isEmpty() && target != null && targetESP.isEnabled()){
@@ -294,7 +293,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
 
     public void attack(LivingEntity target)
     {
-    
         if(targetMode.is("Tick")) {
           if (target.hurtTime == 0) {
             Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
@@ -312,19 +310,18 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
               //  if (fixed != null) {
                //     EntityHitResult hitResult = RaytraceUtils.rayCastByRotation(fixed[0], fixed[1], (float) rangeSetting.getValue());
                  //   if (hitResult != null && hitResult.getEntity() != mc.player) {
-                 if(!swinging){}
+                if(!mc.player.handSwinging)
                  Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
-        }
+    
                  Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
                         EventAttack eventAttack = new EventAttack(target);
                         Client.onEvent(eventAttack);
             //}
             //}           
         }
-        if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())){
-            if(!swinging) {
+
+        if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())) {
                Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
-        }
                  Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
                         EventAttack eventAttack = new EventAttack(target);
                         Client.onEvent(eventAttack);
@@ -336,14 +333,17 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         if(targetMode.is("Tick")) {
             return;
         }
-        swinging = true;
+    // swinging = true;
         if (currentCPS == 0) {
             currentCPS = 1;
         }
         if (attackTimer.hasReached(1000 / currentCPS)) {
             currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
          Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
+         swinging = true;
             attackTimer.reset();
+        } else {
+            swinging = false;
         }
         if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())){
              Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
@@ -355,7 +355,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         targets.clear();
         for(Entity entity : Objects.requireNonNull(mc.world).getEntities())
         {
-            if(isValid(entity)){
+            if (isValid(entity)) {
                 if(distanceTo(entity) <= rangeSetting.getValue()){
                     targets.add((LivingEntity) entity);
                 } else if (distanceTo(entity) <= swingRange.getValue()){

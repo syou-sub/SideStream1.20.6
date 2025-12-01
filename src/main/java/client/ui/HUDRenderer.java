@@ -29,11 +29,11 @@ import static client.features.modules.render.HUD.namebackground;
 import static client.features.modules.render.HUD.nameinfo;
 import static client.utils.font.Fonts.titleFont;
 
-public class HUD2
+public class HUDRenderer
 {
 	protected MinecraftClient mc = MinecraftClient.getInstance();
 	
-	public HUD2()
+	public HUDRenderer()
 	{}
 	
 	public void draw(DrawContext context)
@@ -99,6 +99,8 @@ public class HUD2
 		if(HUD.info.isEnabled())
 		{
 			Fonts.font.drawString(blockps, 3,
+				scaledResolution.getScaledHeight() - height,   new Color(0, 200, 255).getRGB());
+				Fonts.font.drawString(String.valueOf(mc.player.handSwingTicks), 50,
 				scaledResolution.getScaledHeight() - height,   new Color(0, 200, 255).getRGB());
 		}
 		Fonts.font.drawString(build, 5 , 16+titleFont.getFontHeight(), new Color(0, 200, 255).getRGB());
@@ -178,7 +180,7 @@ public class HUD2
 				if(sortedList.size() > nextIndex)
 					nextModule = getNextEnabledModule(sortedList, nextIndex);
 				
-				if((Boolean)HUD.OUTLINE.enabled)
+				if((Boolean)HUD.OUTLINE.isEnabled())
 				{
 					RenderingUtils.drawRect(matrixStack, translateX - 2.6D,
 						translateY - 1.0D, translateX - 2.0D,
@@ -198,7 +200,7 @@ public class HUD2
 							translateY + (double) listOffset - 0.6D, color);
 					}
 				}
-				if((Boolean)HUD.background.enabled)
+				if(HUD.background.isEnabled())
 					RenderingUtils.renderRect(context.getMatrices(),
 						(int)(translateX - 2.0D), (int)(translateY - 1.0D),
 						width, (int)(translateY + listOffset - 1.0D),

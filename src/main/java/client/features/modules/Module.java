@@ -100,6 +100,7 @@ public class Module
 	public void setEnabled(boolean enable)
 	{
 		this.enabled = enable;
+		onEnabled();
 	}
 	
 	public String getDisplayName()
