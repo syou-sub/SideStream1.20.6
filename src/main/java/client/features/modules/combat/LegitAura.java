@@ -258,6 +258,7 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
                 angles = new float[]{ mc.player.getYaw(), mc.player.getPitch()};
             }
         }
+        
         if(e instanceof EventRender3D) {
             MatrixStack matrixStack = ((EventRender3D) e).getMatrix();
             float partialTicks = ((EventRender3D) e).getPartialTicks();
@@ -348,7 +349,6 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())){
              Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
         }
-
     }
     public List<LivingEntity> initTargets() {
         List<LivingEntity> targets = new ArrayList<>();
@@ -365,8 +365,9 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
         }
         return sortTargets(targets);
     }
-    public boolean isValid(Entity entity){
-        boolean targetInvisibles =  targeting.getValues().get("Targeting Invisibles");
+    
+    public boolean isValid(Entity entity) {
+       boolean targetInvisibles =  targeting.getValues().get("Targeting Invisibles");
        boolean targetMobs =  targeting.getValues().get("Targeting Mobs");
        boolean ignoreTeams =  targeting.getValues().get("Ignore Teams");
         if(entity instanceof LivingEntity && entity != mc.player)

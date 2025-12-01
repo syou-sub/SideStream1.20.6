@@ -40,8 +40,9 @@ public class Client
 	public static void init()
 	{
 		System.out.println("Starting " + NAME + " Build " + VERSION);
-	initManagers();
+		initManagers();
 		initFiles();
+		
 		System.out.println(NAME + " started successfully!");
 	}
 	
@@ -56,6 +57,7 @@ public class Client
 	}
 	public static void initManagers()
 	{
+		configManager = new ConfigManager();
 	commandManager = new CommandManager();
 		moduleManager = new ModuleManager();
 	}	
