@@ -5,19 +5,14 @@ import client.features.modules.ModuleManager;
 
 import client.features.modules.render.HUD;
 import client.utils.Colors;
+import client.utils.MCUtil;
 import client.utils.MathUtils;
 import client.utils.RenderingUtils;
 import client.utils.Translate;
 import client.Client;
 import client.utils.font.Fonts;
 import client.utils.font.TTFFontRenderer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.ItemStack;
 import java.awt.Color;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -30,8 +25,7 @@ import static client.features.modules.render.HUD.nameinfo;
 import static client.utils.font.Fonts.titleFont;
 
 public class HUDRenderer
-{
-	protected MinecraftClient mc = MinecraftClient.getInstance();
+ implements MCUtil{
 	
 	public HUDRenderer()
 	{}

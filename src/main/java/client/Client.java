@@ -61,10 +61,12 @@ public class Client
 		{
 			FOLDER.mkdir();
 		}
+		altManager = new AltManager();
+		configManager = new ConfigManager();
 		moduleManager = new ModuleManager();
 		configManager = new ConfigManager();
 	commandManager = new CommandManager();
-		altManager = new AltManager();
+		
 		Config.loadConfig();
 	}	
 	
