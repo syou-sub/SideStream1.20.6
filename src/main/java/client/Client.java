@@ -22,7 +22,7 @@ public class Client
 {
 	public static final String NAME = "SideStream";
 	public static final String VERSION = "20251120";
-	public static HUDRenderer hud2 = new HUDRenderer();
+	public static HUDRenderer hudRenderer = new HUDRenderer();
 	public static String bgLocation = "client/bg.png";
 	public static AltManager altManager;
 	@Getter
@@ -45,17 +45,13 @@ public class Client
 		
 		System.out.println(NAME + " started successfully!");
 	}
-	
-	public static Event<?> onEvent(Event<?> e)
+		public static void initFiles()
 	{
-		if(e instanceof EventMotion) {
-			RotationUtils.virtualYaw = ((EventMotion) e).getServerSideAngles()[0];
-			RotationUtils.virtualPitch = ((EventMotion) e).getServerSideAngles()[1];
-		}
-		moduleManager.onEvent(e);
-		return e;
+		BackgroundManager.loadBackgroundImage();
+		skywarsKillEffect = new SkywarsKillEffect();
+		
 	}
-	public static void initManagers()
+		public static void initManagers()
 	{
 		if(!FOLDER.exists())
 		{
@@ -70,14 +66,20 @@ public class Client
 		Config.loadConfig();
 	}	
 	
+	public static Event<?> onEvent(Event<?> e)
+	{
+		if(e instanceof EventMotion) {
+			RotationUtils.virtualYaw = ((EventMotion) e).getServerSideAngles()[0];
+			RotationUtils.virtualPitch = ((EventMotion) e).getServerSideAngles()[1];
+		}
+		moduleManager.onEvent(e);
+		return e;
+	}
+
+	
 	public static void shutdown()
 	{}
 	
-	public static void initFiles()
-	{
-		BackgroundManager.loadBackgroundImage();
-		skywarsKillEffect = new SkywarsKillEffect();
-		
-	}
+
 
 }

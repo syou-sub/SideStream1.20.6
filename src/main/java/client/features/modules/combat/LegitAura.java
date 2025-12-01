@@ -25,6 +25,7 @@ import client.utils.RenderingUtils;
 import client.utils.RotationUtils;
 import client.utils.ServerHelper;
 import client.utils.TimeHelper;
+import io.netty.util.internal.ThreadLocalRandom;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -306,12 +307,12 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
             currentCPS = 1;
         }
         if (attackTimer.hasReached(1000 / currentCPS)) {
-            currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
+            
+            currentCPS = ThreadLocalRandom.current().nextDouble(minCPS.getValue(), maxCPS.getValue());
                      attackTimer.reset();
               //  if (fixed != null) {
                //     EntityHitResult hitResult = RaytraceUtils.rayCastByRotation(fixed[0], fixed[1], (float) rangeSetting.getValue());
                  //   if (hitResult != null && hitResult.getEntity() != mc.player) {
-                if(!mc.player.handSwinging)
                  Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
     
                  Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(PlayerInteractEntityC2SPacket.attack(target, Objects.requireNonNull(mc.player).isSneaking()));
@@ -339,12 +340,9 @@ switchDelay = new NumberSetting("Switch Delay", 20, 10, 5000, 10);
             currentCPS = 1;
         }
         if (attackTimer.hasReached(1000 / currentCPS)) {
-            currentCPS = RandomUtils.nextDouble(minCPS.getValue(), maxCPS.getValue());
+            currentCPS = ThreadLocalRandom.current().nextDouble(minCPS.getValue(), maxCPS.getValue());
          Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);
-         swinging = true;
             attackTimer.reset();
-        } else {
-            swinging = false;
         }
         if((mc.player.getAttackCooldownProgress(0.5f) >= 1 && cooldownCheck.getValue())){
              Objects.requireNonNull(mc.player).swingHand(Hand.MAIN_HAND);

@@ -10,10 +10,8 @@ public class Translate
 {
 	
 	@Setter
-	@Getter
 	private float x;
 	@Setter
-	@Getter
 	private float y;
 	private long lastMS;
 	
@@ -22,6 +20,14 @@ public class Translate
 		this.x = x;
 		this.y = y;
 		this.lastMS = System.currentTimeMillis();
+	}
+	public float getX()
+	{
+		return x;
+	}
+	public float getY()
+	{
+		return y;
 	}
 	
 	public void interpolate(float targetX, float targetY, int xSpeed,

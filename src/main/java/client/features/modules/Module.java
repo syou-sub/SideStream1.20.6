@@ -5,22 +5,17 @@ import client.features.modules.render.ClickGUI;
 import client.settings.KeyBindSetting;
 import client.settings.Setting;
 import client.event.Event;
-import client.utils.ChatUtils;
-import client.utils.Logger;
 import client.utils.Translate;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Module
-{
-	
-	@Getter
+public class Module {
+
+
 	private final Translate translate = new Translate(0.0F, 0.0F);
 	
 	public static MinecraftClient mc = MinecraftClient.getInstance();
@@ -81,6 +76,10 @@ public class Module
 	{
 		this.settings.addAll(Arrays.asList(settings));
 	}
+	public Translate getTranslateObject()
+	{
+		return translate;
+	}
 	
 	public int getKeyCode()
 	{
@@ -100,7 +99,6 @@ public class Module
 	public void setEnabled(boolean enable)
 	{
 		this.enabled = enable;
-		onEnabled();
 	}
 	
 	public String getDisplayName()
@@ -176,6 +174,7 @@ public class Module
 	public void onPacket(EventPacket event){}
 	public void onMotion(EventMotion event){}
 	public void onTick(EventTick event){}
+
 	public enum Category
 	{
 		COMBAT("Combat"),

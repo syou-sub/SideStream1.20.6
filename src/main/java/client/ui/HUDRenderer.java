@@ -12,7 +12,13 @@ import client.utils.Translate;
 import client.Client;
 import client.utils.font.Fonts;
 import client.utils.font.TTFFontRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ItemStack;
+
 import java.awt.Color;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -26,7 +32,6 @@ import static client.utils.font.Fonts.titleFont;
 
 public class HUDRenderer
  implements MCUtil{
-	
 	public HUDRenderer()
 	{}
 	
@@ -122,7 +127,7 @@ public class HUDRenderer
 			sortedListSize = sortedList.size(); i < sortedListSize; i++)
 		{
 			Module module = sortedList.get(i);
-			Translate translate = module.getTranslate();
+			Translate translate = module.getTranslateObject();
 			
 			String moduleLabel = module.getDisplayName();
 			float length = (float)Fonts.font.getStringWidth(moduleLabel);

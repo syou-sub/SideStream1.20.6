@@ -28,7 +28,7 @@ public class MixinIngameHud
 		CallbackInfo ci)
 	{
 		if(ModuleManager.getModulebyClass(HUD.class).enabled)
-			Client.hud2.draw(context);
+			Client.hudRenderer.draw(context);
 	}
 	
 	@Inject(at = @At("HEAD"), method = {"render"})
