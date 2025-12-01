@@ -57,9 +57,15 @@ public class Client
 	}
 	public static void initManagers()
 	{
+		if(!FOLDER.exists())
+		{
+			FOLDER.mkdir();
+		}
+		moduleManager = new ModuleManager();
 		configManager = new ConfigManager();
 	commandManager = new CommandManager();
-		moduleManager = new ModuleManager();
+		altManager = new AltManager();
+		Config.loadConfig();
 	}	
 	
 	public static void shutdown()
@@ -67,15 +73,9 @@ public class Client
 	
 	public static void initFiles()
 	{
-		if(!FOLDER.exists())
-		{
-			FOLDER.mkdir();
-		}
 		BackgroundManager.loadBackgroundImage();
-			altManager = new AltManager();
-		configManager = new ConfigManager();
 		skywarsKillEffect = new SkywarsKillEffect();
-		Config.loadConfig();
+		
 	}
 
 }
